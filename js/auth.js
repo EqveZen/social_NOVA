@@ -1,7 +1,6 @@
 // js/auth.js
 import { supabase } from './supabase.js'
 
-// 👈 ДОБАВЛЯЕМ export
 export async function register(username, email, password) {
     console.log('🚀 ===== НАЧАЛО РЕГИСТРАЦИИ =====')
     console.log('📝 Данные:', { username, email, password: '***' })
@@ -67,9 +66,6 @@ export async function register(username, email, password) {
             console.log('✅ Пользователь создан в Auth! ID:', authData.user.id)
             console.log('📧 Проверка почты требуется:', authData.user?.email_confirmed_at ? 'Нет' : 'Да')
             
-            // Подождем немного и проверим, создался ли профиль
-            console.log('⏳ Ждем 3 секунды и проверяем профиль...')
-            
             setTimeout(async () => {
                 console.log('🔍 Проверяем создание профиля...')
                 const { data: profile, error: profileError } = await supabase
@@ -82,28 +78,22 @@ export async function register(username, email, password) {
                     console.log('✅ Профиль успешно создан!', profile)
                 } else {
                     console.log('❌ Профиль НЕ создался. Ошибка:', profileError)
-                    console.log('Проверь, работает ли триггер в Supabase!')
                 }
             }, 3000)
             
             alert('✅ Регистрация успешна! Проверьте почту для подтверждения.')
             
-            // Перенаправляем на страницу входа
             setTimeout(() => {
                 window.location.href = '/log.html'
             }, 2000)
-        } else {
-            console.log('❌ Что-то пошло не так: нет данных пользователя')
         }
 
     } catch (err) {
         console.error('❌ КРИТИЧЕСКАЯ ОШИБКА:', err)
         alert('Ошибка при регистрации: ' + err.message)
     }
-    console.log('🏁 ===== КОНЕЦ РЕГИСТРАЦИИ =====')
 }
 
-// 👈 ДОБАВЛЯЕМ export
 export async function login(email, password) {
     console.log('🚀 Попытка входа:', { email })
     
@@ -123,15 +113,12 @@ export async function login(email, password) {
 
         if (data.user) {
             console.log('✅ Вход выполнен!')
-            console.log('Пользователь:', data.user)
             
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('id', data.user.id)
                 .single()
-            
-            console.log('Профиль пользователя:', profile)
             
             localStorage.setItem('user', JSON.stringify({
                 id: data.user.id,
@@ -148,7 +135,6 @@ export async function login(email, password) {
     }
 }
 
-// 👈 ДОБАВЛЯЕМ export
 export async function logout() {
     try {
         await supabase.auth.signOut()
@@ -159,7 +145,6 @@ export async function logout() {
     }
 }
 
-// 👈 ДОБАВЛЯЕМ export
 export async function checkAuth() {
     const { data: { user } } = await supabase.auth.getUser()
     
@@ -172,7 +157,7 @@ export async function checkAuth() {
     return user
 }
 
-// 👈 Оставляем для глобального доступа (onclick)
+// Для onclick в HTML
 window.register = register
 window.login = login
 window.logout = logout
