@@ -9,11 +9,18 @@
 <body class="auth-page">
     <div class="auth-container">
         <div class="auth-card">
+            <!-- Логотип как в Telegram -->
             <div class="auth-logo">
+                <div class="auth-logo-icon">
+                    <svg viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                </div>
                 <h1>NOVA</h1>
                 <p>мессенджер</p>
             </div>
             
+            <!-- Форма входа -->
             <form id="loginForm" class="auth-form">
                 <div class="auth-input-group">
                     <input type="email" class="auth-input" id="loginEmail" placeholder="Email" required>
@@ -23,11 +30,23 @@
                     <input type="password" class="auth-input" id="loginPassword" placeholder="Пароль" required>
                 </div>
                 
-                <!-- КНОПКА ПО ЦЕНТРУ -->
+                <!-- Кнопка как в Telegram -->
                 <button type="submit" class="auth-button">Войти</button>
                 
+                <!-- Альтернативный вход (как в Telegram) -->
+                <div class="auth-divider">
+                    <span>ИЛИ</span>
+                </div>
+                
+                <div class="auth-qr">
+                    <svg viewBox="0 0 24 24" fill="#2A3582">
+                        <path d="M3 3h6v6H3zm2 2v2h2V5zm12-2h6v6h-6zm2 2v2h2V5zM3 15h6v6H3zm2 2v2h2v-2zm12-2h6v6h-6zm2 2v2h2v-2zM7 7h2v2H7zm8 0h2v2h-2zM7 15h2v2H7zm8 0h2v2h-2z"/>
+                    </svg>
+                    <p>Войти по QR-коду</p>
+                </div>
+                
                 <div class="auth-links">
-                    <a href="reg.html" class="auth-link">Создать аккаунт</a>
+                    <a href="reg.html" class="auth-link">Нет аккаунта? Зарегистрироваться</a>
                 </div>
             </form>
         </div>
