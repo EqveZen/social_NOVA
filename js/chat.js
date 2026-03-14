@@ -15,26 +15,16 @@ export async function initChat(chatId) {
     
     if (!currentUser || !currentChatId) return
     
-    // Загружаем информацию о собеседнике
     await loadChatInfo()
-    
-    // Загружаем сообщения
     await loadMessages()
-    
-    // ПОДПИСЫВАЕМСЯ НА НОВЫЕ СООБЩЕНИЯ (ВАЖНО!)
     subscribeToMessages()
-    
-    // Настраиваем ввод
     setupMessageInput()
-    
-    // Отмечаем сообщения как прочитанные
     markMessagesAsRead()
 }
 
 // Загрузка информации о чате
 async function loadChatInfo() {
     try {
-        // Получаем всех участников чата
         const { data: participants, error } = await supabase
             .from('chat_participants')
             .select('user_id')
@@ -44,11 +34,9 @@ async function loadChatInfo() {
         
         if (!participants || participants.length === 0) return
         
-        // Находим собеседника
         const otherUserId = participants.find(p => p.user_id !== currentUser.id)?.user_id
         if (!otherUserId) return
         
-        // Получаем данные профиля
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, email, avatar_url, bio')
@@ -146,16 +134,14 @@ function addDateDivider(container, date) {
     container.appendChild(div)
 }
 
-// ПОДПИСКА НА НОВЫЕ СООБЩЕНИЯ (ИСПРАВЛЕНО)
+// Подписка на новые сообщения
 function subscribeToMessages() {
     console.log('🔔 Подписываемся на новые сообщения...')
     
-    // Отписываемся от старой подписки если есть
     if (messagesSubscription) {
         messagesSubscription.unsubscribe()
     }
     
-    // Создаём новую подписку
     messagesSubscription = supabase
         .channel(`chat-${currentChatId}`)
         .on(
@@ -169,12 +155,34 @@ function subscribeToMessages() {
             (payload) => {
                 console.log('📨 Получено новое сообщение:', payload.new)
                 
-                // Добавляем сообщение в контейнер
                 const container = document.getElementById('messagesContainer')
+                
+                // Проверяем, нужно ли добавить разделитель даты
+                const lastMessage = container.lastElementChild
+                if (lastMessage && lastMessage.classList.contains('date-divider')) {
+                    const lastDate = lastMessage.querySelector('span').textContent
+                    const newDate = new Date(payload.new.created_at).toLocaleDateString('ru-RU', { 
+                        day: 'numeric', 
+                        month: 'long',
+                        year: 'numeric'
+                    })
+                    
+                    if (lastDate !== newDate) {
+                        addDateDivider(container, payload.new.created_at)
+                    }
+                } else {
+                    // Если это первое сообщение или после сообщений
+                    const newDate = new Date(payload.new.created_at).toLocaleDateString('ru-RU', { 
+                        day: 'numeric', 
+                        month: 'long',
+                        year: 'numeric'
+                    })
+                    addDateDivider(container, payload.new.created_at)
+                }
+                
                 addMessageToContainer(payload.new, container)
                 scrollToBottom()
                 
-                // Если сообщение не наше, отмечаем как прочитанное
                 if (payload.new.user_id !== currentUser.id) {
                     markMessageAsRead(payload.new.id)
                 }
@@ -190,21 +198,13 @@ export async function sendMessage() {
     const input = document.getElementById('messageInput')
     const content = input.value.trim()
     
-    // После успешной отправки сообщения
-if (!error) {
-    // Обновляем список чатов (если открыт)
-    if (window.opener && !window.opener.closed) {
-        window.opener.location.reload()
-    }
-}n
+    if (!content) return
     
-    // Очищаем input и отключаем кнопку
     input.value = ''
     document.getElementById('sendBtn').disabled = true
     
     console.log('📤 Отправляем сообщение:', content)
     
-    // Вставляем сообщение в БД
     const { data, error } = await supabase
         .from('messages')
         .insert({
@@ -229,9 +229,15 @@ if (!error) {
         .from('chats')
         .update({ 
             last_message: content,
-            last_message_time: new Date().toISOString()
+            last_message_time: new Date().toISOString(),
+            last_message_user: currentUser.id
         })
         .eq('id', currentChatId)
+    
+    // Обновляем список чатов если открыт
+    if (window.opener && !window.opener.closed) {
+        window.opener.location.reload()
+    }
 }
 
 // Настройка ввода
@@ -250,7 +256,6 @@ function setupMessageInput() {
         }
     })
     
-    // Делаем функцию доступной глобально
     window.sendMessage = sendMessage
 }
 
