@@ -2,75 +2,60 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA — Лента</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NOVA • Лента</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .feed-container {
-            width: 600px;
-            max-width: 90%;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        .user-info {
-            padding: 20px;
-            background: #f5f5f5;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .logout-btn {
-            width: auto;
-            padding: 8px 20px;
-            background: #dc3545;
-        }
-    </style>
+    <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
-    <div class="card feed-container">
-        <div class="header">
-            <div class="logo" style="font-size: 32px; margin: 0;">NOVA</div>
-            <button class="logout-btn" onclick="logout()">Выйти</button>
+    <div class="profile-container">
+        <!-- Верхняя навигация -->
+        <div class="top-nav">
+            <div class="logo">NOVA</div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="window.location.href='feed.html'">Лента</button>
+                <button class="nav-btn" onclick="window.location.href='profile.html'">Профиль</button>
+                <button class="nav-btn logout-btn" onclick="window.logout()">Выйти</button>
+            </div>
         </div>
-        <!-- Добавь после заголовка -->
-<div class="nav-menu" style="display: flex; gap: 10px; margin-bottom: 20px;">
-    <button class="nav-btn active" onclick="window.location.href='feed.html'">Лента</button>
-    <button class="nav-btn" onclick="window.location.href='profile.html'">Профиль</button>
-</div>
-        
-        <div id="userInfo" class="user-info">
-            Загрузка...
-        </div>
-        
-        <div style="text-align: center; padding: 40px 0;">
-            <p>🚀 Добро пожаловать!</p>
-            <p>Здесь будет лента постов...</p>
+
+        <!-- Лента постов -->
+        <div class="feed-container" style="padding: 0;">
+            <div id="feedPosts">
+                <!-- Посты будут загружаться сюда -->
+                <div class="feed-post">
+                    <div class="post-header">
+                        <div class="post-avatar">👤</div>
+                        <span class="post-username">Загрузка...</span>
+                    </div>
+                    <div class="post-image" style="background: #f5f5f5;"></div>
+                    <div class="post-actions">
+                        <span>❤️</span>
+                        <span>💬</span>
+                        <span>📤</span>
+                    </div>
+                    <div class="post-likes">0 отметок "Нравится"</div>
+                    <div class="post-caption"><strong>Загрузка...</strong> лента загружается</div>
+                    <div class="post-time">только что</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script type="module">
-        import { checkAuth, logout } from './js/auth.js'
+        import { logout, checkAuth } from './js/auth.js'
         import { supabase } from './js/supabase.js'
         
         window.logout = logout
         
-        const user = await checkAuth()
-        
-        if (user) {
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', user.id)
-                .single()
+        async function loadFeed() {
+            const user = await checkAuth()
+            if (!user) return
             
-            document.getElementById('userInfo').innerHTML = `
-                <strong>Привет, ${profile?.username || 'пользователь'}!</strong><br>
-                <small>${user.email}</small>
-            `
+            // TODO: загружать посты из БД
         }
+        
+        loadFeed()
     </script>
 </body>
 </html>
