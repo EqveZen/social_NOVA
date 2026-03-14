@@ -15,8 +15,6 @@ export async function initMessages() {
         return
     }
     
-    console.log('✅ Текущий пользователь:', currentUser.id)
-    
     await loadChats()
     setupRealtime()
 }
@@ -24,15 +22,13 @@ export async function initMessages() {
 // Загрузка чатов
 async function loadChats() {
     try {
-        // 1. Сначала получаем все chat_id где участвует пользователь
+        // Получаем все чаты пользователя
         const { data: participations, error: partError } = await supabase
             .from('chat_participants')
             .select('chat_id')
             .eq('user_id', currentUser.id)
         
         if (partError) throw partError
-        
-        console.log('📦 Участия:', participations)
         
         if (!participations || participations.length === 0) {
             showEmptyChats()
@@ -41,7 +37,7 @@ async function loadChats() {
         
         const chatIds = participations.map(p => p.chat_id)
         
-        // 2. Получаем информацию о чатах
+        // Получаем информацию о чатах
         const { data: chats, error: chatsError } = await supabase
             .from('chats')
             .select('*')
@@ -50,9 +46,6 @@ async function loadChats() {
         
         if (chatsError) throw chatsError
         
-        console.log('📦 Чаты:', chats)
-        
-        // 3. Для каждого чата загружаем собеседника
         const chatsList = document.getElementById('chatsList')
         if (!chatsList) return
         
@@ -71,16 +64,10 @@ async function loadChats() {
 // Загрузка деталей чата
 async function loadChatDetails(chat, container) {
     try {
-        // Получаем собеседника (исправленный запрос)
+        // Получаем user_id собеседника
         const { data: participants, error: partError } = await supabase
             .from('chat_participants')
-            .select(`
-                user_id,
-                profiles:profiles!inner (
-                    username,
-                    avatar_url
-                )
-            `)
+            .select('user_id')
             .eq('chat_id', chat.id)
             .neq('user_id', currentUser.id)
         
@@ -88,7 +75,16 @@ async function loadChatDetails(chat, container) {
         
         if (!participants || participants.length === 0) return
         
-        const otherUser = participants[0].profiles
+        const otherUserId = participants[0].user_id
+        
+        // Получаем данные профиля
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('username, avatar_url')
+            .eq('id', otherUserId)
+            .single()
+        
+        if (profileError) throw profileError
         
         // Получаем последнее сообщение
         const { data: messages, error: msgError } = await supabase
@@ -112,12 +108,12 @@ async function loadChatDetails(chat, container) {
         
         if (countError) throw countError
         
-        const chatElement = createChatElement(chat.id, otherUser, lastMessage, count || 0)
+        const chatElement = createChatElement(chat.id, profile, lastMessage, count || 0)
         container.appendChild(chatElement)
         
         allChats.push({
             element: chatElement,
-            name: (otherUser.username || '').toLowerCase(),
+            name: (profile.username || '').toLowerCase(),
             lastMessage: lastMessage?.content || ''
         })
         
@@ -131,7 +127,6 @@ function createChatElement(chatId, user, lastMessage, unreadCount) {
     const div = document.createElement('div')
     div.className = 'chat-item'
     div.setAttribute('data-chat-id', chatId)
-    div.setAttribute('data-name', (user.username || '').toLowerCase())
     div.onclick = () => window.location.href = `chat.html?id=${chatId}`
     
     const time = lastMessage ? formatTime(lastMessage.created_at) : ''
@@ -169,29 +164,13 @@ function showEmptyChats() {
     `
 }
 
-// Фильтр чатов
-export function filterChats() {
-    const searchText = document.getElementById('searchInput')?.value.toLowerCase() || ''
-    
-    allChats.forEach(chat => {
-        if (chat.name.includes(searchText) || chat.lastMessage.toLowerCase().includes(searchText)) {
-            chat.element.style.display = 'flex'
-        } else {
-            chat.element.style.display = 'none'
-        }
-    })
-}
-
 // Realtime обновления
 function setupRealtime() {
     supabase
         .channel('messages-channel')
         .on('postgres_changes', 
             { event: 'INSERT', schema: 'public', table: 'messages' },
-            () => {
-                console.log('🔄 Новое сообщение, обновляем чаты')
-                loadChats()
-            }
+            () => loadChats()
         )
         .subscribe()
 }
@@ -206,5 +185,3 @@ function formatTime(timestamp) {
     }
     return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
 }
-
-export { loadChats }
