@@ -1,176 +1,180 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NOVA • Профиль</title>
-    <link rel="stylesheet" href="css/profile.css">
-</head>
-<body class="profile-page">
-    <!-- Верхняя панель -->
-    <div class="profile-header">
-        <div class="profile-header-left">
-            <button class="profile-back-btn" onclick="window.location.href='messages.html'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-                </svg>
-            </button>
-            <!-- НАЗВАНИЕ ПО СЕРЕДИНЕ -->
-            <span class="profile-header-title">Профиль</span>
-        </div>
-        
-        <!-- Кнопка в мессенджер -->
-        <button class="profile-messages-btn" onclick="window.location.href='messages.html'">
-            <svg viewBox="0 0 24 24">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
-            </svg>
-            <span>Мессенджер</span>
-        </button>
-    </div>
+// js/profile.js
+import { checkAuth } from './auth.js'
+import { supabase } from './supabase.js'
 
-    <!-- Контент профиля -->
-    <div class="profile-container">
-        <!-- Аватар и имя (БЕЗ ПОЧТЫ) -->
-        <div class="profile-avatar-section">
-            <div class="profile-avatar">
-                <div class="avatar-image" onclick="document.getElementById('avatarInput').click()">
-                    <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
-                    <span id="avatarText">?</span>
-                </div>
-                <div class="avatar-edit" onclick="document.getElementById('avatarInput').click()">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                    </svg>
-                </div>
-                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-            </div>
-            <h2 class="profile-name" id="profileName">Загрузка...</h2>
-            <!-- ПОЧТА УДАЛЕНА -->
+let currentUser = null
+
+export async function initProfile() {
+    console.log('🚀 Загрузка профиля...')
+    
+    try {
+        currentUser = await checkAuth()
+        if (!currentUser) {
+            console.log('❌ Пользователь не авторизован')
+            return
+        }
+        
+        console.log('✅ Пользователь:', currentUser.id)
+        
+        // Загружаем профиль из БД
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single()
+        
+        if (error) {
+            console.error('❌ Ошибка загрузки профиля:', error)
+            return
+        }
+        
+        console.log('📦 Данные профиля:', profile)
+        
+        // Отображаем имя
+        document.getElementById('profileName').textContent = profile.username || 'Пользователь'
+        document.getElementById('displayName').textContent = profile.username || 'Не указано'
+        document.getElementById('displayEmail').textContent = currentUser.email
+        
+        // ОТОБРАЖАЕМ БИО
+        const displayBio = document.getElementById('displayBio')
+        if (displayBio) {
+            displayBio.textContent = profile.bio || '🚀 Социальная сеть NOVA'
+        }
+        
+        // Заполняем форму редактирования
+        document.getElementById('editUsername').value = profile.username || ''
+        document.getElementById('editEmail').value = currentUser.email || ''
+        
+        // ЗАПОЛНЯЕМ БИО В ФОРМЕ
+        const editBio = document.getElementById('editBio')
+        if (editBio) {
+            editBio.value = profile.bio || '🚀 Социальная сеть NOVA'
+        }
+        
+        // Аватар
+        if (profile.avatar_url) {
+            document.getElementById('avatarImg').src = profile.avatar_url
+            document.getElementById('avatarImg').style.display = 'block'
+            document.getElementById('avatarText').style.display = 'none'
+        } else {
+            document.getElementById('avatarText').textContent = 
+                (profile.username || '?')[0].toUpperCase()
+        }
+        
+        // Настраиваем загрузку аватара
+        setupAvatarUpload()
+        
+    } catch (err) {
+        console.error('❌ Критическая ошибка:', err)
+    }
+}
+
+// Открыть/закрыть форму редактирования
+export function toggleEditForm() {
+    const form = document.getElementById('editForm')
+    form.classList.toggle('show')
+}
+
+// СОХРАНЕНИЕ ПРОФИЛЯ (ВКЛЮЧАЯ БИО)
+export async function updateProfile() {
+    try {
+        console.log('💾 Сохраняем профиль...')
+        
+        const newUsername = document.getElementById('editUsername').value.trim()
+        const newEmail = document.getElementById('editEmail').value.trim()
+        const newBio = document.getElementById('editBio')?.value.trim() || '🚀 Социальная сеть NOVA'
+        
+        if (!newUsername) {
+            alert('Имя пользователя не может быть пустым')
+            return
+        }
+        
+        // СОХРАНЯЕМ ВСЕ ДАННЫЕ В БД
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ 
+                username: newUsername,
+                bio: newBio  // 👈 СОХРАНЯЕМ БИО
+            })
+            .eq('id', currentUser.id)
+        
+        if (profileError) {
+            console.error('❌ Ошибка сохранения:', profileError)
+            throw profileError
+        }
+        
+        console.log('✅ Профиль сохранён в БД')
+        
+        // Обновляем email если изменился
+        if (newEmail !== currentUser.email) {
+            console.log('📧 Обновляем email...')
+            const { error: emailError } = await supabase.auth.updateUser({
+                email: newEmail
+            })
+            if (emailError) throw emailError
+            alert('✅ Подтвердите новый email по ссылке в письме')
+        }
+        
+        alert('✅ Профиль успешно обновлён!')
+        
+        // Перезагружаем страницу чтобы показать изменения
+        location.reload()
+        
+    } catch (err) {
+        console.error('❌ Ошибка:', err)
+        alert('❌ Ошибка при сохранении: ' + err.message)
+    }
+}
+
+// Загрузка аватара
+function setupAvatarUpload() {
+    const avatarInput = document.getElementById('avatarInput')
+    if (!avatarInput) return
+    
+    avatarInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+        
+        console.log('📸 Загружаем аватар:', file.name)
+        
+        try {
+            // Проверка размера
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Файл слишком большой! Максимум 2MB')
+                return
+            }
             
-            <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать профиль</button>
-        </div>
-
-        <!-- Форма редактирования (ДОБАВЛЕНО ПОЛЕ БИО) -->
-        <div id="editForm" class="edit-form">
-            <h3>Редактировать профиль</h3>
-            <div class="edit-input-group">
-                <input type="text" class="edit-input" id="editUsername" placeholder="Имя пользователя">
-            </div>
-            <div class="edit-input-group">
-                <input type="email" class="edit-input" id="editEmail" placeholder="Email">
-            </div>
-            <!-- НОВОЕ ПОЛЕ ДЛЯ БИО -->
-            <div class="edit-input-group">
-                <textarea class="edit-input" id="editBio" placeholder="О себе" rows="3" style="resize: none;">🚀 Социальная сеть NOVA</textarea>
-            </div>
-            <div class="edit-actions">
-                <button class="edit-save-btn" onclick="window.updateProfile()">Сохранить</button>
-                <button class="edit-cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
-            </div>
-        </div>
-
-        <!-- Информация (С БИО) -->
-        <div class="profile-section">
-            <div class="profile-section-title">Основная информация</div>
-            <div class="profile-info-item">
-                <span class="info-label">Имя</span>
-                <span class="info-value" id="displayName">...</span>
-            </div>
-            <!-- НОВОЕ ПОЛЕ БИО -->
-            <div class="profile-info-item">
-                <span class="info-label">О себе</span>
-                <span class="info-value" id="displayBio">🚀 Социальная сеть NOVA</span>
-            </div>
-            <div class="profile-info-item">
-                <span class="info-label">Email</span>
-                <span class="info-value" id="displayEmail">...</span>
-            </div>
-        </div>
-
-        <!-- Настройки -->
-        <div class="profile-section">
-            <div class="profile-section-title">Настройки</div>
-            <div class="settings-menu">
-                <div class="settings-item" onclick="window.location.href='notifications.html'">
-                    <div class="settings-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-                        </svg>
-                    </div>
-                    <div class="settings-content">
-                        <div class="settings-title">Уведомления</div>
-                        <div class="settings-description">Звук, вибрация, приоритет</div>
-                    </div>
-                    <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="settings-item" onclick="window.location.href='privacy.html'">
-                    <div class="settings-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-                        </svg>
-                    </div>
-                    <div class="settings-content">
-                        <div class="settings-title">Конфиденциальность</div>
-                        <div class="settings-description">Блокировки, кто видит</div>
-                    </div>
-                    <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </div>
-                </div>
-                
-                <div class="settings-item" onclick="window.location.href='theme.html'">
-                    <div class="settings-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 10c0 4.41-3.09 8-8 8-.79 0-1.5-.71-1.5-1.5 0-.34.1-.57.28-.86.2-.29.52-.64.22-1.14-.3-.5-.97-.5-1.52-.5-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5c0 .28.22.5.5.5s.5-.22.5-.5c0-2.48-2.02-4.5-4.5-4.5S9 9.52 9 12s2.02 4.5 4.5 4.5c1.09 0 2.04-.41 2.81-1.07.49.97 1.51 1.57 2.69 1.57 2.21 0 4-2.24 4-5 0-4.97-4.03-8-8-8s-8 3.03-8 8 4.03 8 8 8z"/>
-                        </svg>
-                    </div>
-                    <div class="settings-content">
-                        <div class="settings-title">Оформление</div>
-                        <div class="settings-description">Тёмная тема, размер</div>
-                    </div>
-                    <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Кнопка выхода -->
-        <div class="profile-section">
-            <div class="settings-menu">
-                <div class="settings-item logout-item" onclick="window.logout()">
-                    <div class="settings-icon">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-                        </svg>
-                    </div>
-                    <div class="settings-content">
-                        <div class="settings-title">Выйти</div>
-                        <div class="settings-description">Завершить сеанс</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { logout } from './js/auth.js'
-        import { initProfile, toggleEditForm, updateProfile } from './js/profile.js'
-        
-        window.logout = logout
-        window.toggleEditForm = toggleEditForm
-        window.updateProfile = updateProfile
-        
-        initProfile()
-    </script>
-</body>
-</html>
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${currentUser.id}/${Date.now()}.${fileExt}`
+            
+            // Загружаем в Storage
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(fileName, file)
+            
+            if (uploadError) throw uploadError
+            
+            // Получаем публичный URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(fileName)
+            
+            console.log('🔗 URL аватара:', publicUrl)
+            
+            // Обновляем профиль
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', currentUser.id)
+            
+            if (updateError) throw updateError
+            
+            console.log('✅ Аватар сохранён')
+            location.reload()
+            
+        } catch (err) {
+            console.error('❌ Ошибка загрузки аватара:', err)
+            alert('Ошибка при загрузке аватара: ' + err.message)
+        }
+    })
+}
