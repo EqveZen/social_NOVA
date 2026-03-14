@@ -1,299 +1,61 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+/* css/style.css - ТОЛЬКО БАЗОВЫЕ СТИЛИ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-body{
-
-height:100vh;
-
-display:flex;
-justify-content:center;
-align-items:center;
-
-overflow:hidden;
-
-/* фон */
-
-background:linear-gradient(
-135deg,
-#2A3582,
-#3f4da3,
-#4e65c7
-);
-
-background-size:400% 400%;
-animation:bgMove 12s ease infinite;
-
+/* Убираем глобальное центрирование! */
+body {
+    background: #fafafa;
+    min-height: 100vh;
 }
 
-@keyframes bgMove{
-
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
-
+/* Поля ввода (общие для всех страниц) */
+.input-group {
+    position: relative;
+    margin-bottom: 30px;
 }
 
-/* реакции */
-
-.reaction{
-
-position:absolute;
-bottom:-40px;
-
-width:26px;
-height:26px;
-
-background:#EB670E;
-
-opacity:.9;
-
-animation:floatReaction linear infinite;
-
+input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid #2A3582;
+    background: transparent;
+    font-size: 16px;
+    outline: none;
 }
 
-/* позиции */
-
-.reaction:nth-child(1){left:10%;animation-duration:8s}
-.reaction:nth-child(2){left:20%;animation-duration:10s}
-.reaction:nth-child(3){left:35%;animation-duration:9s}
-.reaction:nth-child(4){left:50%;animation-duration:11s}
-.reaction:nth-child(5){left:65%;animation-duration:10s}
-.reaction:nth-child(6){left:80%;animation-duration:12s}
-
-/* формы */
-
-.heart{
-
-clip-path:polygon(
-50% 90%,
-10% 50%,
-25% 20%,
-50% 35%,
-75% 20%,
-90% 50%
-);
-
-}
-
-.star{
-
-clip-path:polygon(
-50% 0%,
-61% 35%,
-98% 35%,
-68% 57%,
-79% 91%,
-50% 70%,
-21% 91%,
-32% 57%,
-2% 35%,
-39% 35%
-);
-
-}
-
-.like{
-
-clip-path:polygon(
-20% 100%,
-20% 40%,
-40% 40%,
-40% 0,
-70% 0,
-70% 40%,
-90% 40%,
-90% 100%
-);
-
-}
-
-@keyframes floatReaction{
-
-0%{
-transform:translateY(0) scale(.8);
-opacity:0;
-}
-
-20%{
-opacity:1;
-}
-
-100%{
-transform:translateY(-120vh) scale(1.3);
-opacity:0;
-}
-
-}
-
-/* карточка */
-
-.card{
-
-width:360px;
-padding:45px;
-
-border-radius:28px;
-
-background:#ffffff;
-
-box-shadow:
-0 30px 80px rgba(0,0,0,0.25);
-
-animation:cardEnter 1.2s ease;
-
-}
-
-@keyframes cardEnter{
-
-from{
-opacity:0;
-transform:translateY(60px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
-}
-
-/* логотип */
-
-.logo{
-
-text-align:center;
-
-font-size:56px;
-font-weight:900;
-
-letter-spacing:10px;
-
-margin-bottom:40px;
-
-color:#EB670E;
-
-text-shadow:
-0 8px 20px rgba(235,103,14,0.3);
-
-animation:logoIntro 1.5s ease;
-
-}
-
-@keyframes logoIntro{
-
-0%{
-opacity:0;
-transform:translateY(-40px) scale(.8);
-}
-
-60%{
-transform:scale(1.08);
-}
-
-100%{
-opacity:1;
-transform:scale(1);
-}
-
-}
-
-/* поля */
-
-.input-group{
-
-position:relative;
-margin-bottom:30px;
-
-}
-
-input{
-
-width:100%;
-padding:12px;
-
-border:none;
-border-bottom:2px solid #2A3582;
-
-background:transparent;
-
-font-size:16px;
-
-outline:none;
-
-}
-
-label{
-
-position:absolute;
-left:10px;
-top:12px;
-
-color:#2A3582;
-
-transition:.3s;
-
+label {
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    color: #2A3582;
+    transition: .3s;
 }
 
 input:focus + label,
-input:not(:placeholder-shown) + label{
-
-top:-10px;
-font-size:12px;
-opacity:.7;
-
+input:not(:placeholder-shown) + label {
+    top: -10px;
+    font-size: 12px;
+    opacity: .7;
 }
 
-/* кнопка */
-
-button{
-
-width:100%;
-padding:14px;
-
-border:none;
-border-radius:16px;
-
-background:#EB670E;
-
-color:white;
-
-font-size:16px;
-
-cursor:pointer;
-
-transition:.25s;
-
+/* Кнопки (общие) */
+button {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #EB670E;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: .25s;
 }
 
-button:hover{
-
-transform:translateY(-3px) scale(1.04);
-
-box-shadow:0 12px 30px rgba(0,0,0,0.2);
-
-}
-
-/* ссылка */
-
-.signup{
-
-text-align:center;
-margin-top:20px;
-
-font-size:14px;
-
-}
-
-.signup a{
-
-color:#EB670E;
-
-text-decoration:none;
-
-font-weight:600;
-
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
