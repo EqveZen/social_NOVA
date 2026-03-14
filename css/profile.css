@@ -1,61 +1,420 @@
-/* Стили для правых иконок */
-.profile-right {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+/* css/profile-telegram.css - ПРОФИЛЬ В СТИЛЕ TELEGRAM */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.profile-icon {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
+.profile-page {
+    background: #f2f4f6;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Верхняя панель как в Telegram */
+.profile-header {
+    background: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e5e9ed;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.profile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-back-btn {
     width: 40px;
     height: 40px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2A3582;  /* твой синий */
+}
+
+.profile-back-btn:hover {
+    background: #f0f2f5;
+}
+
+.profile-header-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #222;
+}
+
+.profile-header-right {
+    display: flex;
+    gap: 8px;
+}
+
+.profile-header-btn {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    transition: all 0.2s;
-    color: #262626;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2A3582;  /* твой синий */
 }
 
-.profile-icon:hover {
-    background: #f0f0f0;
-    transform: scale(1.05);
+.profile-header-btn:hover {
+    background: #f0f2f5;
 }
 
-.profile-icon.active {
-    color: #EB670E;
+/* Контейнер профиля */
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-.profile-icon.active:hover {
-    background: #fff1e6;
+/* Аватар как в Telegram */
+.profile-avatar-section {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.profile-icon svg {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.2s;
+.profile-avatar {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
 }
 
-.profile-icon:hover svg {
-    transform: scale(1.1);
+.avatar-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #EB670E, #2A3582);  /* твои цвета */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 48px;
+    font-weight: 500;
+    cursor: pointer;
+    overflow: hidden;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Адаптация для мобильных */
-@media (max-width: 768px) {
-    .profile-right {
-        gap: 8px;
+.avatar-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-edit {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 36px;
+    height: 36px;
+    background: #EB670E;  /* твой оранжевый */
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-edit:hover {
+    background: #d55a0c;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 5px;
+}
+
+.profile-phone {
+    color: #8696a0;
+    font-size: 14px;
+}
+
+/* Кнопка редактирования как в Telegram */
+.profile-edit-btn {
+    background: white;
+    border: 1px solid #e5e9ed;
+    border-radius: 20px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #222;
+    cursor: pointer;
+    margin: 20px 0;
+    transition: background 0.2s;
+    width: auto;
+    display: inline-block;
+}
+
+.profile-edit-btn:hover {
+    background: #f0f2f5;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Секции как в Telegram */
+.profile-section {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.profile-section-title {
+    padding: 16px 20px 8px;
+    color: #8696a0;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.profile-section-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid #f0f2f5;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.profile-section-item:last-child {
+    border-bottom: none;
+}
+
+.profile-section-item:hover {
+    background: #f8f9fa;
+}
+
+.item-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #2A3582;  /* твой синий */
+}
+
+.item-content {
+    flex: 1;
+}
+
+.item-title {
+    font-size: 16px;
+    color: #222;
+    margin-bottom: 2px;
+}
+
+.item-subtitle {
+    font-size: 13px;
+    color: #8696a0;
+}
+
+.item-value {
+    color: #2A3582;  /* твой синий */
+    font-size: 15px;
+    margin-right: 10px;
+}
+
+.item-arrow {
+    color: #c0c8cf;
+}
+
+/* Информация о пользователе */
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: white;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.profile-info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    width: 100px;
+    color: #8696a0;
+    font-size: 15px;
+}
+
+.info-value {
+    flex: 1;
+    color: #222;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Форма редактирования */
+.edit-form {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.edit-form.show {
+    display: block;
+}
+
+.edit-form h3 {
+    color: #222;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.edit-input-group {
+    margin-bottom: 16px;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #e5e9ed;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.edit-input:focus {
+    border-color: #EB670E;  /* твой оранжевый */
+}
+
+.edit-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.edit-save-btn {
+    flex: 1;
+    padding: 14px;
+    background: #EB670E;  /* твой оранжевый */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.edit-cancel-btn {
+    flex: 1;
+    padding: 14px;
+    background: #f0f2f5;
+    color: #222;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Меню настроек */
+.settings-menu {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f2f5;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.settings-item:hover {
+    background: #f8f9fa;
+}
+
+.settings-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: #2A3582;  /* твой синий */
+}
+
+.settings-content {
+    flex: 1;
+}
+
+.settings-title {
+    font-size: 16px;
+    color: #222;
+}
+
+.settings-description {
+    font-size: 13px;
+    color: #8696a0;
+    margin-top: 2px;
+}
+
+/* Кнопка выхода */
+.logout-item {
+    color: #ff3b30;
+}
+
+.logout-item .settings-icon {
+    color: #ff3b30;
+    background: #ffeeed;
+}
+
+/* Адаптация */
+@media (max-width: 480px) {
+    .profile-container {
+        padding: 12px;
     }
     
-    .profile-icon {
-        width: 36px;
-        height: 36px;
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
     }
     
-    .profile-icon svg {
-        width: 20px;
-        height: 20px;
+    .avatar-image {
+        width: 100px;
+        height: 100px;
+        font-size: 40px;
+    }
+    
+    .profile-name {
+        font-size: 22px;
     }
 }
