@@ -48,8 +48,70 @@
     </div>
 </div>
     <!-- Основной контент профиля (остаётся без изменений) -->
-    <div class="profile-container">
-        <!-- ... весь остальной код профиля ... -->
+     <div class="profile-container">
+        <!-- Шапка профиля -->
+        <div class="profile-header">
+            <!-- Аватар -->
+            <div class="profile-avatar">
+                <div class="avatar" onclick="document.getElementById('avatarInput').click()">
+                    <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
+                    <span id="avatarText">?</span>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*">
+            </div>
+            
+            <!-- Информация профиля -->
+            <div class="profile-info">
+                <div class="profile-name-row">
+                    <span id="profileName" class="profile-username">Загрузка...</span>
+                    <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать</button>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-value" id="postsCount">0</span>
+                        <span class="stat-label">публикаций</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="followersCount">0</span>
+                        <span class="stat-label">подписчиков</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="followingCount">0</span>
+                        <span class="stat-label">подписок</span>
+                    </div>
+                </div>
+                
+                <div class="profile-bio">
+                    <div id="profileEmail" class="fullname"></div>
+                    <div>🚀 Социальная сеть NOVA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Форма редактирования -->
+        <div id="editForm" class="edit-form">
+            <h3>Редактировать профиль</h3>
+            <div class="input-group">
+                <input type="text" id="editUsername" required>
+                <label>Имя пользователя</label>
+            </div>
+            <div class="input-group">
+                <input type="email" id="editEmail" required>
+                <label>Email</label>
+            </div>
+            <div class="form-actions">
+                <button class="save-btn" onclick="window.updateProfile()">Сохранить</button>
+                <button class="cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
+            </div>
+        </div>
+
+        <!-- Сетка постов -->
+        <div class="profile-posts">
+            <div class="posts-grid" id="postsList">
+                <!-- Посты будут здесь -->
+            </div>
+        </div>
     </div>
 
     <script type="module">
