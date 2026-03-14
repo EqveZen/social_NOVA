@@ -1,86 +1,90 @@
-/* css/profile.css */
+/* css/profile.css - НОВЫЙ СТИЛЬ ПРОФИЛЯ */
 
-/* Базовые стили как в Instagram */
-body {
+/* Сбрасываем всё для страницы профиля */
+.profile-page {
+    background: #fafafa;
     margin: 0;
     padding: 0;
-    background: #fafafa;
 }
 
-/* Контейнер профиля */
-.profile-container {
-    max-width: 935px;
-    margin: 0 auto;
-    padding: 30px 20px 0;
-}
-
-/* ===== ВЕРХНЯЯ НАВИГАЦИЯ ===== */
-.top-nav {
+/* ВЕРХНЯЯ ПАНЕЛЬ */
+.profile-top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
-    margin-bottom: 44px;
+    padding: 12px 20px;
+    background: white;
     border-bottom: 1px solid #dbdbdb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-.logo {
+/* Левая часть - буква N */
+.profile-left {
+    width: 40px;
+}
+
+.profile-logo-letter {
     font-size: 28px;
     font-weight: 900;
-    letter-spacing: 1px;
     color: #EB670E;
-    margin: 0;
 }
 
-.nav-buttons {
+/* Центр - NOVA */
+.profile-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.profile-logo-full {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #EB670E;
+}
+
+/* Правая часть - иконки */
+.profile-right {
     display: flex;
-    gap: 8px;
+    gap: 20px;
+    align-items: center;
 }
 
-.nav-btn {
-    padding: 8px 16px;
-    background: transparent;
-    color: #262626;
-    font-weight: 600;
-    font-size: 14px;
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
+.profile-icon {
+    background: none;
+    border: none;
+    padding: 5px;
+    font-size: 24px;
     cursor: pointer;
-    transition: all 0.2s;
+    color: #262626;
+    width: auto;
+    transition: transform 0.2s;
 }
 
-.nav-btn:hover {
-    background: #f8f8f8;
-    transform: none;
+.profile-icon:hover {
+    transform: scale(1.1);
+    background: none;
     box-shadow: none;
 }
 
-.nav-btn.active {
-    background: #EB670E;
-    color: white;
-    border-color: #EB670E;
+/* КОНТЕЙНЕР ПРОФИЛЯ */
+.profile-container {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px;
 }
 
-.logout-btn {
-    background: #ed4956 !important;
-    color: white !important;
-    border-color: #ed4956 !important;
-}
-
-.logout-btn:hover {
-    background: #c43e4a !important;
-}
-
-/* ===== ШАПКА ПРОФИЛЯ ===== */
+/* ШАПКА ПРОФИЛЯ */
 .profile-header {
     display: flex;
     margin-bottom: 44px;
-    padding-bottom: 0;
+    gap: 50px;
 }
 
-/* Аватар - слева */
-.avatar-section {
-    margin-right: 30px;
+/* Аватар */
+.profile-avatar {
     width: 150px;
     flex-shrink: 0;
 }
@@ -128,14 +132,13 @@ body {
     display: none;
 }
 
-/* Информация профиля - справа */
+/* Информация профиля */
 .profile-info {
     flex: 1;
-    min-width: 0; /* предотвращает переполнение */
 }
 
-/* Верхняя строка с именем и кнопкой */
-.profile-name-section {
+/* Верхняя строка */
+.profile-name-row {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -143,14 +146,13 @@ body {
     flex-wrap: wrap;
 }
 
-.profile-name {
+.profile-username {
     font-size: 28px;
     font-weight: 300;
     color: #262626;
-    line-height: 1.2;
 }
 
-.edit-toggle {
+.profile-edit-btn {
     background: transparent;
     border: 1px solid #dbdbdb;
     color: #262626;
@@ -159,16 +161,15 @@ body {
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
-    white-space: nowrap;
 }
 
-.edit-toggle:hover {
+.profile-edit-btn:hover {
     background: #fafafa;
     transform: none;
     box-shadow: none;
 }
 
-/* Статистика - в одну строку */
+/* Статистика */
 .profile-stats {
     display: flex;
     gap: 40px;
@@ -202,18 +203,9 @@ body {
     margin-bottom: 5px;
 }
 
-.profile-bio .website {
-    color: #00376b;
-    text-decoration: none;
-}
-
-.profile-bio .website:hover {
-    text-decoration: underline;
-}
-
-/* ===== ФОРМА РЕДАКТИРОВАНИЯ ===== */
+/* ФОРМА РЕДАКТИРОВАНИЯ */
 .edit-form {
-    background: #fff;
+    background: white;
     border: 1px solid #dbdbdb;
     border-radius: 12px;
     padding: 20px;
@@ -241,34 +233,33 @@ body {
     background: #0095f6 !important;
     color: white !important;
     border: none !important;
-    padding: 7px 16px !important;
-    border-radius: 4px !important;
 }
 
 .cancel-btn {
     background: #dbdbdb !important;
     color: #262626 !important;
     border: none !important;
-    padding: 7px 16px !important;
-    border-radius: 4px !important;
 }
 
-/* ===== СЕТКА ПОСТОВ ===== */
-.posts-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
+/* СЕТКА ПОСТОВ */
+.profile-posts {
     margin-top: 44px;
     border-top: 1px solid #dbdbdb;
     padding-top: 12px;
 }
 
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
 .post-item {
-    position: relative;
     aspect-ratio: 1;
     background: #f5f5f5;
     cursor: pointer;
     overflow: hidden;
+    position: relative;
 }
 
 .post-item img {
@@ -301,7 +292,6 @@ body {
     gap: 30px;
     color: white;
     font-weight: 600;
-    font-size: 16px;
 }
 
 .post-stats span {
@@ -310,52 +300,23 @@ body {
     gap: 7px;
 }
 
-/* ===== ПЛАНШЕТЫ (768px - 935px) ===== */
-@media (max-width: 935px) {
-    .profile-container {
-        padding: 30px 20px 0;
-    }
-}
-
-/* ===== ТЕЛЕФОНЫ (до 768px) ===== */
+/* ===== АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ===== */
 @media (max-width: 768px) {
     .profile-container {
         padding: 0;
     }
 
-    /* Навигация */
-    .top-nav {
-        padding: 8px 16px;
-        margin-bottom: 24px;
-    }
-
-    .logo {
-        font-size: 24px;
-    }
-
-    .nav-buttons {
-        gap: 4px;
-    }
-
-    .nav-btn {
-        padding: 6px 12px;
-        font-size: 13px;
-    }
-
-    /* Шапка профиля - вертикально как в Instagram */
+    /* Шапка профиля вертикально */
     .profile-header {
         flex-direction: column;
         align-items: center;
-        text-align: center;
-        padding: 0 16px;
-        margin-bottom: 24px;
+        gap: 20px;
+        padding: 20px 16px;
+        margin-bottom: 20px;
     }
 
-    /* Аватар сверху */
-    .avatar-section {
-        margin-right: 0;
-        margin-bottom: 20px;
-        width: auto;
+    .profile-avatar {
+        width: 90px;
     }
 
     .avatar {
@@ -364,25 +325,17 @@ body {
         font-size: 36px;
     }
 
-    /* Информация по центру */
     .profile-info {
         width: 100%;
+        text-align: center;
     }
 
-    .profile-name-section {
+    .profile-name-row {
         justify-content: center;
-        margin-bottom: 12px;
     }
 
-    .profile-name {
-        font-size: 22px;
-    }
-
-    /* Статистика в ряд */
     .profile-stats {
         justify-content: center;
-        gap: 30px;
-        margin-bottom: 12px;
     }
 
     .stat {
@@ -391,45 +344,18 @@ body {
         gap: 2px;
     }
 
-    .stat-value {
-        font-size: 16px;
-    }
-
-    .stat-label {
-        font-size: 13px;
-    }
-
-    /* Био */
-    .profile-bio {
-        text-align: center;
-        padding: 0 10px;
-    }
-
-    /* Сетка постов */
     .posts-grid {
         gap: 2px;
-        margin-top: 20px;
-        padding-top: 8px;
     }
 
-    /* Убираем оверлей на телефонах */
     .post-overlay {
         display: none;
     }
 }
 
-/* ===== МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 480px) ===== */
 @media (max-width: 480px) {
-    .profile-name-section {
+    .profile-name-row {
         flex-direction: column;
         gap: 10px;
-    }
-
-    .profile-stats {
-        gap: 20px;
-    }
-
-    .stat {
-        font-size: 14px;
     }
 }
