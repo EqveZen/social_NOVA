@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOVA • Профиль</title>
+    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
@@ -11,25 +12,27 @@
         <!-- Верхняя навигация -->
         <div class="top-nav">
             <div class="logo">NOVA</div>
-            <div>
+            <div class="nav-buttons">
                 <button class="nav-btn" onclick="window.location.href='feed.html'">Лента</button>
                 <button class="nav-btn active" onclick="window.location.href='profile.html'">Профиль</button>
-                <button class="logout-btn" onclick="window.logout()">Выйти</button>
+                <button class="nav-btn logout-btn" onclick="window.logout()">Выйти</button>
             </div>
         </div>
 
         <!-- Шапка профиля -->
         <div class="profile-header">
-            <div class="avatar" onclick="document.getElementById('avatarInput').click()">
-                <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
-                <span id="avatarText">?</span>
+            <div class="avatar-section">
+                <div class="avatar" onclick="document.getElementById('avatarInput').click()">
+                    <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
+                    <span id="avatarText">?</span>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*">
             </div>
-            <input type="file" id="avatarInput" accept="image/*">
             
             <div class="profile-info">
                 <div class="profile-name-section">
                     <span id="profileName" class="profile-name">Загрузка...</span>
-                    <button class="edit-toggle" onclick="window.toggleEditForm()">✏️ Редактировать профиль</button>
+                    <button class="edit-toggle" onclick="window.toggleEditForm()">Редактировать профиль</button>
                 </div>
                 
                 <div class="profile-stats">
