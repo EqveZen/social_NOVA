@@ -2,14 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Этот тег ОБЯЗАТЕЛЕН для правильного отображения на телефонах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>NOVA • Профиль</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
     <div class="profile-container">
-        <!-- Верхняя навигация -->
+        <!-- Навигация -->
         <div class="top-nav">
             <div class="logo">NOVA</div>
             <div class="nav-buttons">
@@ -21,6 +22,7 @@
 
         <!-- Шапка профиля -->
         <div class="profile-header">
+            <!-- Аватар слева (на ПК) / сверху (на телефоне) -->
             <div class="avatar-section">
                 <div class="avatar" onclick="document.getElementById('avatarInput').click()">
                     <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
@@ -29,10 +31,11 @@
                 <input type="file" id="avatarInput" accept="image/*">
             </div>
             
+            <!-- Информация справа (на ПК) / снизу (на телефоне) -->
             <div class="profile-info">
                 <div class="profile-name-section">
                     <span id="profileName" class="profile-name">Загрузка...</span>
-                    <button class="edit-toggle" onclick="window.toggleEditForm()">Редактировать профиль</button>
+                    <button class="edit-toggle" onclick="window.toggleEditForm()">Редактировать</button>
                 </div>
                 
                 <div class="profile-stats">
@@ -69,10 +72,6 @@
                 <input type="email" id="editEmail" required>
                 <label>Email</label>
             </div>
-            <div class="input-group">
-                <input type="text" id="editBio" placeholder="О себе">
-                <label>О себе</label>
-            </div>
             <div class="form-actions">
                 <button class="save-btn" onclick="window.updateProfile()">Сохранить</button>
                 <button class="cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
@@ -80,10 +79,8 @@
         </div>
 
         <!-- Сетка постов -->
-        <div id="userPosts">
-            <div id="postsList" class="posts-grid">
-                <!-- Посты будут загружаться сюда -->
-            </div>
+        <div class="posts-grid" id="postsList">
+            <!-- Посты будут здесь -->
         </div>
     </div>
 
