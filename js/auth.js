@@ -69,7 +69,8 @@ export async function login(email, password) {
                 email: data.user.email
             }))
             
-            window.location.href = '/social_NOVA/messages.html'
+            // Правильный путь для телефона
+            window.location.href = '/nova-social/messages.html'
         }
 
     } catch (err) {
@@ -82,7 +83,7 @@ export async function login(email, password) {
 export async function logout() {
     await supabase.auth.signOut()
     localStorage.removeItem('user')
-    window.location.href = '/social_NOVA/log.html'
+    window.location.href = '/nova-social/log.html'
 }
 
 // ПРОВЕРКА АВТОРИЗАЦИИ
@@ -92,7 +93,7 @@ export async function checkAuth() {
     if (!user) {
         const path = window.location.pathname
         if (!path.includes('log.html') && !path.includes('reg.html')) {
-            window.location.href = '/social_NOVA/log.html'
+            window.location.href = '/nova-social/log.html'
         }
     }
     return user
