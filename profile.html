@@ -2,120 +2,164 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOVA • Профиль</title>
-    <link rel="stylesheet" href="./css/profile.css">
+    <link rel="stylesheet" href="css/profile-telegram.css">
 </head>
 <body class="profile-page">
-    <!-- Верхняя панель с иконками -->
-    <div class="profile-top-bar">
-        <!-- Левая часть - иконка газеты -->
-        <div class="profile-left">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 50 50" fill="#EB670E">
-                <path d="M 18.5 10 C 16.57 10 15 11.57 15 13.5 L 15 19 L 10.5 19 C 8.57 19 7 20.57 7 22.5 L 7 36.5 C 7 38.981 9.019 41 11.5 41 L 37.5 41 C 39.981 41 42 38.981 42 36.5 L 42 13.5 C 42 11.57 40.43 10 38.5 10 L 18.5 10 z M 18.5 11 L 38.5 11 C 39.878 11 41 12.122 41 13.5 L 41 36.5 C 41 38.43 39.43 40 37.5 40 L 14.326172 40 C 15.346172 39.174 16 37.912 16 36.5 L 16 13.5 C 16 12.122 17.122 11 18.5 11 z M 20.5 16 C 20.224 16 20 16.224 20 16.5 C 20 16.776 20.224 17 20.5 17 L 36.5 17 C 36.776 17 37 16.776 37 16.5 C 37 16.224 36.776 16 36.5 16 L 20.5 16 z M 10.5 20 L 15 20 L 15 36.5 C 15 38.43 13.43 40 11.5 40 C 9.57 40 8 38.43 8 36.5 L 8 22.5 C 8 21.122 9.122 20 10.5 20 z M 20.5 22 C 20.224 22 20 22.224 20 22.5 C 20 22.776 20.224 23 20.5 23 L 36.5 23 C 36.776 23 37 22.776 37 22.5 C 37 22.224 36.776 22 36.5 22 L 20.5 22 z M 21 28 C 20.448 28 20 28.448 20 29 L 20 34 C 20 34.552 20.448 35 21 35 L 26 35 C 26.552 35 27 34.552 27 34 L 27 29 C 27 28.448 26.552 28 26 28 L 21 28 z M 30.5 28 C 30.224 28 30 28.224 30 28.5 C 30 28.776 30.224 29 30.5 29 L 36.5 29 C 36.776 29 37 28.776 37 28.5 C 37 28.224 36.776 28 36.5 28 L 30.5 28 z M 30.5 34 C 30.224 34 30 34.224 30 34.5 C 30 34.776 30.224 35 30.5 35 L 36.5 35 C 36.776 35 37 34.776 37 34.5 C 37 34.224 36.776 34 36.5 34 L 30.5 34 z"></path>
-            </svg>
-        </div>
-        
-        <!-- Центр - NOVA -->
-        <div class="profile-center">
-            <span class="profile-logo-full">NOVA</span>
-        </div>
-        
-        <!-- Правая часть - иконки -->
-        <div class="profile-right">
-            <!-- Иконка Лента (дом) -->
-            <button class="profile-icon" onclick="window.location.href='feed.html'" title="Лента">
-                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13v4h-4v2h4v4h2v-4h4v-2h-4V7h-2z"/>
+    <!-- Верхняя панель как в Telegram -->
+    <div class="profile-header">
+        <div class="profile-header-left">
+            <button class="profile-back-btn" onclick="window.location.href='messages.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
             </button>
-            
-            <!-- Иконка Сообщения (три точки) -->
-            <button class="profile-icon" onclick="window.location.href='messages.html'" title="Сообщения">
-                <svg width="24" height="24" viewBox="0 0 1024 1024" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M464 512a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm200 0a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm-400 0a48 48 0 1 0 96 0 48 48 0 1 0-96 0zm661.2-173.6c-22.6-53.7-55-101.9-96.3-143.3a444.35 444.35 0 0 0-143.3-96.3C630.6 75.7 572.2 64 512 64h-2c-60.6.3-119.3 12.3-174.5 35.9a445.35 445.35 0 0 0-142 96.5c-40.9 41.3-73 89.3-95.2 142.8-23 55.4-34.6 114.3-34.3 174.9A449.4 449.4 0 0 0 112 714v152a46 46 0 0 0 46 46h152.1A449.4 449.4 0 0 0 510 960h2.1c59.9 0 118-11.6 172.7-34.3a444.48 444.48 0 0 0 142.8-95.2c41.3-40.9 73.8-88.7 96.5-142 23.6-55.2 35.6-113.9 35.9-174.5.3-60.9-11.5-120-34.8-175.6zm-151.1 438C704 845.8 611 884 512 884h-1.7c-60.3-.3-120.2-15.3-173.1-43.5l-8.4-4.5H188V695.2l-4.5-8.4C155.3 633.9 140.3 574 140 513.7c-.4-99.7 37.7-193.3 107.6-263.8 69.8-70.5 163.1-109.5 262.8-109.9h1.7c50 0 98.5 9.7 144.2 28.9 44.6 18.7 84.6 45.6 119 80 34.3 34.3 61.3 74.4 80 119 19.4 46.2 29.1 95.2 28.9 145.8-.6 99.6-39.7 192.9-110.1 262.7z"/>
-                </svg>
-            </button>
-            
-            <!-- Иконка Профиль (человечек) - активная -->
-            <button class="profile-icon active" onclick="window.location.href='profile.html'" title="Профиль">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12,11A5,5,0,1,0,7,6,5.006,5.006,0,0,0,12,11Zm0-8A3,3,0,1,1,9,6,3,3,0,0,1,12,3ZM3,22V18a5.006,5.006,0,0,1,5-5h8a5.006,5.006,0,0,1,5,5v4a1,1,0,0,1-2,0V18a3,3,0,0,0-3-3H8a3,3,0,0,0-3,3v4a1,1,0,0,1-2,0Z"/>
+            <span class="profile-header-title">Профиль</span>
+        </div>
+        <div class="profile-header-right">
+            <button class="profile-header-btn" onclick="window.location.href='settings.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
                 </svg>
             </button>
         </div>
     </div>
 
-    <!-- Основной контент профиля -->
+    <!-- Контент профиля -->
     <div class="profile-container">
-        <!-- Шапка профиля -->
-        <div class="profile-header">
-            <!-- Аватар -->
+        <!-- Аватар и имя -->
+        <div class="profile-avatar-section">
             <div class="profile-avatar">
-                <div class="avatar" onclick="document.getElementById('avatarInput').click()">
+                <div class="avatar-image" onclick="document.getElementById('avatarInput').click()">
                     <img id="avatarImg" class="avatar-img" src="" alt="" style="display: none;">
                     <span id="avatarText">?</span>
                 </div>
-                <input type="file" id="avatarInput" accept="image/*">
+                <div class="avatar-edit" onclick="document.getElementById('avatarInput').click()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </div>
+                <input type="file" id="avatarInput" accept="image/*" style="display: none;">
             </div>
+            <h2 class="profile-name" id="profileName">Загрузка...</h2>
+            <div class="profile-phone" id="profileEmail"></div>
             
-            <!-- Информация профиля -->
-            <div class="profile-info">
-                <div class="profile-name-row">
-                    <span id="profileName" class="profile-username">Загрузка...</span>
-                    <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать</button>
-                </div>
-                
-                <div class="profile-stats">
-                    <div class="stat">
-                        <span class="stat-value" id="postsCount">0</span>
-                        <span class="stat-label">публикаций</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="followersCount">0</span>
-                        <span class="stat-label">подписчиков</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-value" id="followingCount">0</span>
-                        <span class="stat-label">подписок</span>
-                    </div>
-                </div>
-                
-                <div class="profile-bio">
-                    <div id="profileEmail" class="fullname"></div>
-                    <div>🚀 Социальная сеть NOVA</div>
-                </div>
-            </div>
+            <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать профиль</button>
         </div>
 
         <!-- Форма редактирования -->
         <div id="editForm" class="edit-form">
             <h3>Редактировать профиль</h3>
-            <div class="input-group">
-                <input type="text" id="editUsername" required>
-                <label>Имя пользователя</label>
+            <div class="edit-input-group">
+                <input type="text" class="edit-input" id="editUsername" placeholder="Имя пользователя">
             </div>
-            <div class="input-group">
-                <input type="email" id="editEmail" required>
-                <label>Email</label>
+            <div class="edit-input-group">
+                <input type="email" class="edit-input" id="editEmail" placeholder="Email">
             </div>
-            <div class="form-actions">
-                <button class="save-btn" onclick="window.updateProfile()">Сохранить</button>
-                <button class="cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
+            <div class="edit-actions">
+                <button class="edit-save-btn" onclick="window.updateProfile()">Сохранить</button>
+                <button class="edit-cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
             </div>
         </div>
 
-        <!-- Сетка постов -->
-        <div class="profile-posts">
-            <div class="posts-grid" id="postsList">
-                <!-- Посты будут загружаться сюда -->
+        <!-- Информация (как в Telegram) -->
+        <div class="profile-section">
+            <div class="profile-section-title">Основная информация</div>
+            <div class="profile-info-item">
+                <span class="info-label">Имя</span>
+                <span class="info-value" id="displayName">...</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="info-label">Email</span>
+                <span class="info-value" id="displayEmail">...</span>
+            </div>
+            <div class="profile-info-item">
+                <span class="info-label">Телефон</span>
+                <span class="info-value">не указан</span>
+            </div>
+        </div>
+
+        <!-- Настройки (как в Telegram) -->
+        <div class="profile-section">
+            <div class="profile-section-title">Настройки</div>
+            <div class="settings-menu">
+                <div class="settings-item" onclick="window.location.href='notifications.html'">
+                    <div class="settings-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                        </svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-title">Уведомления</div>
+                        <div class="settings-description">Звук, вибрация, приоритет</div>
+                    </div>
+                    <div class="item-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="settings-item" onclick="window.location.href='privacy.html'">
+                    <div class="settings-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                        </svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-title">Конфиденциальность</div>
+                        <div class="settings-description">Блокировки, кто видит</div>
+                    </div>
+                    <div class="item-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <div class="settings-item" onclick="window.location.href='theme.html'">
+                    <div class="settings-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 10c0 4.41-3.09 8-8 8-.79 0-1.5-.71-1.5-1.5 0-.34.1-.57.28-.86.2-.29.52-.64.22-1.14-.3-.5-.97-.5-1.52-.5-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5c0 .28.22.5.5.5s.5-.22.5-.5c0-2.48-2.02-4.5-4.5-4.5S9 9.52 9 12s2.02 4.5 4.5 4.5c1.09 0 2.04-.41 2.81-1.07.49.97 1.51 1.57 2.69 1.57 2.21 0 4-2.24 4-5 0-4.97-4.03-8-8-8s-8 3.03-8 8 4.03 8 8 8z"/>
+                        </svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-title">Оформление</div>
+                        <div class="settings-description">Тёмная тема, размер</div>
+                    </div>
+                    <div class="item-arrow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Кнопка выхода -->
+        <div class="profile-section">
+            <div class="settings-menu">
+                <div class="settings-item logout-item" onclick="window.logout()">
+                    <div class="settings-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                        </svg>
+                    </div>
+                    <div class="settings-content">
+                        <div class="settings-title">Выйти</div>
+                        <div class="settings-description">Завершить сеанс</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
+        import { logout } from './js/auth.js'
         import { initProfile, toggleEditForm, updateProfile } from './js/profile.js'
         
+        window.logout = logout
         window.toggleEditForm = toggleEditForm
         window.updateProfile = updateProfile
         
