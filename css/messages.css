@@ -264,3 +264,22 @@
         font-size: 20px;
     }
 }
+/* Иконка профиля */
+.profile-icon-btn {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #EB670E;
+    transition: all 0.2s;
+}
+
+.profile-icon-btn:hover {
+    background: rgba(235, 103, 14, 0.1);
+    transform: scale(1.1);
+}
