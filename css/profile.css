@@ -1,59 +1,57 @@
 /* css/profile.css */
 
-/* Базовые стили */
+/* Базовые стили как в Instagram */
 body {
     margin: 0;
     padding: 0;
     background: #fafafa;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    min-height: 100vh;
 }
 
 /* Контейнер профиля */
 .profile-container {
     max-width: 935px;
     margin: 0 auto;
-    padding: 30px 20px;
+    padding: 30px 20px 0;
 }
 
-/* ===== НАВИГАЦИЯ ===== */
+/* ===== ВЕРХНЯЯ НАВИГАЦИЯ ===== */
 .top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    padding: 10px 0;
-    flex-wrap: wrap;
-    gap: 15px;
+    padding: 12px 0;
+    margin-bottom: 44px;
+    border-bottom: 1px solid #dbdbdb;
 }
 
 .logo {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 900;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: #EB670E;
     margin: 0;
 }
 
 .nav-buttons {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .nav-btn {
-    flex: 0 1 auto;
     padding: 8px 16px;
     background: transparent;
     color: #262626;
     font-weight: 600;
+    font-size: 14px;
+    border: 1px solid #dbdbdb;
     border-radius: 8px;
-    border: 1px solid transparent;
+    cursor: pointer;
     transition: all 0.2s;
 }
 
 .nav-btn:hover {
-    background: #f0f0f0;
+    background: #f8f8f8;
     transform: none;
     box-shadow: none;
 }
@@ -61,27 +59,30 @@ body {
 .nav-btn.active {
     background: #EB670E;
     color: white;
+    border-color: #EB670E;
 }
 
 .logout-btn {
     background: #ed4956 !important;
     color: white !important;
-    padding: 8px 16px !important;
-    border-radius: 8px !important;
+    border-color: #ed4956 !important;
+}
+
+.logout-btn:hover {
+    background: #c43e4a !important;
 }
 
 /* ===== ШАПКА ПРОФИЛЯ ===== */
 .profile-header {
     display: flex;
-    gap: 50px;
     margin-bottom: 44px;
-    padding-bottom: 44px;
-    border-bottom: 1px solid #dbdbdb;
-    flex-wrap: wrap;
+    padding-bottom: 0;
 }
 
-/* Аватар */
+/* Аватар - слева */
 .avatar-section {
+    margin-right: 30px;
+    width: 150px;
     flex-shrink: 0;
 }
 
@@ -97,11 +98,10 @@ body {
     font-size: 50px;
     font-weight: bold;
     cursor: pointer;
-    position: relative;
     overflow: hidden;
     border: 3px solid #fff;
     box-shadow: 0 0 0 1px #dbdbdb;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .avatar:hover::after {
@@ -116,6 +116,7 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 30px;
+    border-radius: 50%;
 }
 
 .avatar-img {
@@ -128,12 +129,13 @@ body {
     display: none;
 }
 
-/* Информация профиля */
+/* Информация профиля - справа */
 .profile-info {
     flex: 1;
-    min-width: 280px;
+    min-width: 0; /* предотвращает переполнение */
 }
 
+/* Верхняя строка с именем и кнопкой */
 .profile-name-section {
     display: flex;
     align-items: center;
@@ -146,6 +148,7 @@ body {
     font-size: 28px;
     font-weight: 300;
     color: #262626;
+    line-height: 1.2;
 }
 
 .edit-toggle {
@@ -156,7 +159,8 @@ body {
     border-radius: 4px;
     font-weight: 600;
     font-size: 14px;
-    width: auto;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .edit-toggle:hover {
@@ -165,17 +169,17 @@ body {
     box-shadow: none;
 }
 
-/* Статистика */
+/* Статистика - в одну строку */
 .profile-stats {
     display: flex;
     gap: 40px;
     margin-bottom: 20px;
-    flex-wrap: wrap;
 }
 
 .stat {
     display: flex;
     gap: 5px;
+    font-size: 16px;
 }
 
 .stat-value {
@@ -191,6 +195,7 @@ body {
 .profile-bio {
     color: #262626;
     font-size: 14px;
+    line-height: 1.5;
 }
 
 .profile-bio .fullname {
@@ -213,8 +218,7 @@ body {
     border: 1px solid #dbdbdb;
     border-radius: 12px;
     padding: 20px;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin: 20px 0 30px;
     display: none;
 }
 
@@ -232,36 +236,40 @@ body {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-    flex-wrap: wrap;
 }
 
 .save-btn {
     background: #0095f6 !important;
-    width: auto;
+    color: white !important;
+    border: none !important;
     padding: 7px 16px !important;
+    border-radius: 4px !important;
 }
 
 .cancel-btn {
     background: #dbdbdb !important;
     color: #262626 !important;
-    width: auto;
+    border: none !important;
     padding: 7px 16px !important;
+    border-radius: 4px !important;
 }
 
 /* ===== СЕТКА ПОСТОВ ===== */
 .posts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 28px;
-    margin-top: 30px;
+    gap: 4px;
+    margin-top: 44px;
+    border-top: 1px solid #dbdbdb;
+    padding-top: 12px;
 }
 
 .post-item {
     position: relative;
     aspect-ratio: 1;
     background: #f5f5f5;
-    overflow: hidden;
     cursor: pointer;
+    overflow: hidden;
 }
 
 .post-item img {
@@ -294,97 +302,124 @@ body {
     gap: 30px;
     color: white;
     font-weight: 600;
+    font-size: 16px;
 }
 
 .post-stats span {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
 }
 
-/* Пустой профиль */
-.empty-profile {
-    text-align: center;
-    padding: 60px 20px;
-    color: #8e8e8e;
+/* ===== ПЛАНШЕТЫ (768px - 935px) ===== */
+@media (max-width: 935px) {
+    .profile-container {
+        padding: 30px 20px 0;
+    }
 }
 
-.empty-profile h3 {
-    font-size: 28px;
-    font-weight: 300;
-    margin-bottom: 10px;
-    color: #262626;
-}
-
-.empty-profile p {
-    margin-bottom: 20px;
-}
-
-.empty-profile button {
-    width: auto;
-    padding: 8px 24px;
-    background: #0095f6;
-}
-
-/* ===== АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ===== */
+/* ===== ТЕЛЕФОНЫ (до 768px) ===== */
 @media (max-width: 768px) {
     .profile-container {
-        padding: 15px 12px;
+        padding: 0;
     }
 
     /* Навигация */
     .top-nav {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+        padding: 8px 16px;
+        margin-bottom: 24px;
     }
 
     .logo {
-        text-align: center;
+        font-size: 24px;
     }
 
     .nav-buttons {
-        justify-content: center;
+        gap: 4px;
     }
 
-    /* Шапка профиля */
+    .nav-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    /* Шапка профиля - вертикально как в Instagram */
     .profile-header {
         flex-direction: column;
-        gap: 20px;
+        align-items: center;
         text-align: center;
+        padding: 0 16px;
+        margin-bottom: 24px;
+    }
+
+    /* Аватар сверху */
+    .avatar-section {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: auto;
     }
 
     .avatar {
-        width: 100px;
-        height: 100px;
+        width: 90px;
+        height: 90px;
         font-size: 36px;
+    }
+
+    /* Информация по центру */
+    .profile-info {
+        width: 100%;
     }
 
     .profile-name-section {
         justify-content: center;
+        margin-bottom: 12px;
     }
 
+    .profile-name {
+        font-size: 22px;
+    }
+
+    /* Статистика в ряд */
     .profile-stats {
         justify-content: center;
         gap: 30px;
+        margin-bottom: 12px;
     }
 
     .stat {
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        gap: 2px;
+    }
+
+    .stat-value {
+        font-size: 16px;
+    }
+
+    .stat-label {
+        font-size: 13px;
+    }
+
+    /* Био */
+    .profile-bio {
+        text-align: center;
+        padding: 0 10px;
     }
 
     /* Сетка постов */
     .posts-grid {
-        gap: 3px;
+        gap: 2px;
+        margin-top: 20px;
+        padding-top: 8px;
     }
 
+    /* Убираем оверлей на телефонах */
     .post-overlay {
-        display: none; /* На телефонах оверлей не нужен */
+        display: none;
     }
 }
 
+/* ===== МАЛЕНЬКИЕ ТЕЛЕФОНЫ (до 480px) ===== */
 @media (max-width: 480px) {
     .profile-name-section {
         flex-direction: column;
@@ -395,92 +430,7 @@ body {
         gap: 20px;
     }
 
-    .posts-grid {
-        gap: 2px;
-    }
-}
-
-/* ===== ЛЕНТА (FEED) ===== */
-.feed-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.feed-post {
-    background: white;
-    border: 1px solid #dbdbdb;
-    border-radius: 8px;
-    margin-bottom: 24px;
-}
-
-.post-header {
-    display: flex;
-    align-items: center;
-    padding: 14px;
-    gap: 10px;
-}
-
-.post-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #2A3582, #EB670E);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.post-username {
-    font-weight: 600;
-    color: #262626;
-}
-
-.post-image {
-    width: 100%;
-    aspect-ratio: 1;
-    background: #f5f5f5;
-}
-
-.post-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.post-actions {
-    display: flex;
-    gap: 16px;
-    padding: 14px;
-}
-
-.post-likes {
-    font-weight: 600;
-    padding: 0 14px 8px;
-}
-
-.post-caption {
-    padding: 0 14px 14px;
-    font-size: 14px;
-}
-
-.post-time {
-    padding: 0 14px 14px;
-    color: #8e8e8e;
-    font-size: 12px;
-}
-
-@media (max-width: 768px) {
-    .feed-container {
-        padding: 0;
-    }
-    
-    .feed-post {
-        border-left: none;
-        border-right: none;
-        border-radius: 0;
+    .stat {
+        font-size: 14px;
     }
 }
