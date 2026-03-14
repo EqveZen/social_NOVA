@@ -15,16 +15,26 @@ export async function initChat(chatId) {
     
     if (!currentUser || !currentChatId) return
     
+    // Загружаем информацию о собеседнике
     await loadChatInfo()
+    
+    // Загружаем сообщения
     await loadMessages()
+    
+    // ПОДПИСЫВАЕМСЯ НА НОВЫЕ СООБЩЕНИЯ (ВАЖНО!)
     subscribeToMessages()
+    
+    // Настраиваем ввод
     setupMessageInput()
+    
+    // Отмечаем сообщения как прочитанные
+    markMessagesAsRead()
 }
 
-// Загрузка информации о чате (САМЫЙ ПРОСТОЙ СПОСОБ)
+// Загрузка информации о чате
 async function loadChatInfo() {
     try {
-        // Просто получаем всех участников чата
+        // Получаем всех участников чата
         const { data: participants, error } = await supabase
             .from('chat_participants')
             .select('user_id')
@@ -36,7 +46,6 @@ async function loadChatInfo() {
         
         // Находим собеседника
         const otherUserId = participants.find(p => p.user_id !== currentUser.id)?.user_id
-        
         if (!otherUserId) return
         
         // Получаем данные профиля
@@ -70,14 +79,14 @@ async function loadMessages() {
         
         if (error) throw error
         
-        console.log('📦 Сообщения:', messages)
+        console.log('📦 Загружено сообщений:', messages.length)
         
         const container = document.getElementById('messagesContainer')
         container.innerHTML = ''
         
         let lastDate = null
         
-        for (const msg of messages) {
+        messages.forEach(msg => {
             const msgDate = new Date(msg.created_at).toDateString()
             
             if (msgDate !== lastDate) {
@@ -86,7 +95,7 @@ async function loadMessages() {
             }
             
             addMessageToContainer(msg, container)
-        }
+        })
         
         scrollToBottom()
         
@@ -95,22 +104,26 @@ async function loadMessages() {
     }
 }
 
-// Добавление сообщения
+// Добавление сообщения в контейнер
 function addMessageToContainer(message, container) {
     const div = document.createElement('div')
     div.className = `message-wrapper ${message.user_id === currentUser.id ? 'own' : ''}`
+    div.setAttribute('data-message-id', message.id)
     
     const time = new Date(message.created_at).toLocaleTimeString([], { 
         hour: '2-digit', 
         minute: '2-digit' 
     })
     
+    const status = message.user_id === currentUser.id 
+        ? (message.read ? ' ✓✓' : ' ✓') 
+        : ''
+    
     div.innerHTML = `
         <div class="message-bubble">
-            <div class="message-text">${message.content}</div>
+            <div class="message-text">${escapeHtml(message.content)}</div>
             <div class="message-time">
-                ${time}
-                ${message.user_id === currentUser.id ? (message.read ? ' ✓✓' : ' ✓') : ''}
+                ${time}${status}
             </div>
         </div>
     `
@@ -123,34 +136,53 @@ function addDateDivider(container, date) {
     const div = document.createElement('div')
     div.className = 'date-divider'
     
-    const dateText = new Date(date).toLocaleDateString([], { 
+    const dateText = new Date(date).toLocaleDateString('ru-RU', { 
         day: 'numeric', 
-        month: 'long' 
+        month: 'long',
+        year: 'numeric'
     })
     
     div.innerHTML = `<span>${dateText}</span>`
     container.appendChild(div)
 }
 
-// Подписка на новые сообщения
+// ПОДПИСКА НА НОВЫЕ СООБЩЕНИЯ (ИСПРАВЛЕНО)
 function subscribeToMessages() {
+    console.log('🔔 Подписываемся на новые сообщения...')
+    
+    // Отписываемся от старой подписки если есть
+    if (messagesSubscription) {
+        messagesSubscription.unsubscribe()
+    }
+    
+    // Создаём новую подписку
     messagesSubscription = supabase
         .channel(`chat-${currentChatId}`)
-        .on('postgres_changes', 
-            { 
-                event: 'INSERT', 
-                schema: 'public', 
+        .on(
+            'postgres_changes',
+            {
+                event: 'INSERT',
+                schema: 'public',
                 table: 'messages',
                 filter: `chat_id=eq.${currentChatId}`
-            }, 
-            payload => {
-                console.log('📨 Новое сообщение:', payload.new)
+            },
+            (payload) => {
+                console.log('📨 Получено новое сообщение:', payload.new)
+                
+                // Добавляем сообщение в контейнер
                 const container = document.getElementById('messagesContainer')
                 addMessageToContainer(payload.new, container)
                 scrollToBottom()
+                
+                // Если сообщение не наше, отмечаем как прочитанное
+                if (payload.new.user_id !== currentUser.id) {
+                    markMessageAsRead(payload.new.id)
+                }
             }
         )
-        .subscribe()
+        .subscribe((status) => {
+            console.log('📡 Статус подписки:', status)
+        })
 }
 
 // Отправка сообщения
@@ -160,23 +192,31 @@ export async function sendMessage() {
     
     if (!content) return
     
+    // Очищаем input и отключаем кнопку
     input.value = ''
     document.getElementById('sendBtn').disabled = true
     
-    const { error } = await supabase
+    console.log('📤 Отправляем сообщение:', content)
+    
+    // Вставляем сообщение в БД
+    const { data, error } = await supabase
         .from('messages')
         .insert({
             chat_id: currentChatId,
             user_id: currentUser.id,
             content: content,
-            read: false
+            read: false,
+            created_at: new Date().toISOString()
         })
+        .select()
     
     if (error) {
         console.error('❌ Ошибка отправки:', error)
         alert('Не удалось отправить сообщение')
         return
     }
+    
+    console.log('✅ Сообщение отправлено:', data)
     
     // Обновляем последнее сообщение в чате
     await supabase
@@ -204,13 +244,39 @@ function setupMessageInput() {
         }
     })
     
+    // Делаем функцию доступной глобально
     window.sendMessage = sendMessage
+}
+
+// Отметить сообщение как прочитанное
+async function markMessageAsRead(messageId) {
+    await supabase
+        .from('messages')
+        .update({ read: true })
+        .eq('id', messageId)
+}
+
+// Отметить все сообщения как прочитанные
+async function markMessagesAsRead() {
+    await supabase
+        .from('messages')
+        .update({ read: true })
+        .eq('chat_id', currentChatId)
+        .neq('user_id', currentUser.id)
+        .eq('read', false)
 }
 
 // Прокрутка вниз
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer')
     container.scrollTop = container.scrollHeight
+}
+
+// Защита от XSS
+function escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
 }
 
 // Очистка при выходе
