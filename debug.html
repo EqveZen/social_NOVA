@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Supabase</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        #output { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #fff; padding: 10px; border-radius: 4px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Supabase Debug Tool</h1>
+    
+    <button onclick="testConnection()">1. Тест подключения</button>
+    <button onclick="testRegistration()">2. Тест регистрации</button>
+    <button onclick="checkTables()">3. Проверка таблиц</button>
+    
+    <div id="output">
+        Нажми кнопку для теста...
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js'
+        
+        window.supabase = supabase
+        
+        window.testConnection = async () => {
+            const output = document.getElementById('output')
+            output.innerHTML = '⏳ Проверяю подключение...'
+            
+            try {
+                // Проверяем сессию
+                const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+                
+                if (sessionError) throw sessionError
+                
+                let result = '<h3 class="success">✅ Подключение к Supabase работает!</h3>'
+                result += `<p>URL: ${supabase.supabaseUrl}</p>`
+                
+                // Проверяем таблицу profiles
+                try {
+                    const { data, error: tableError } = await supabase
+                        .from('profiles')
+                        .select('count', { count: 'exact', head: true })
+                    
+                    if (!tableError) {
+                        result += '<p class="success">✅ Таблица profiles доступна</p>'
+                    } else {
+                        result += `<p class="error">❌ Ошибка таблицы: ${tableError.message}</p>`
+                    }
+                } catch (e) {
+                    result += `<p class="error">❌ Таблица profiles не найдена</p>`
+                }
+                
+                output.innerHTML = result
+                
+            } catch (err) {
+                output.innerHTML = `
+                    <h3 class="error">❌ Ошибка подключения</h3>
+                    <p>${err.message}</p>
+                    <pre>Проверь:
+1. Правильный ли URL в supabase.js?
+2. Правильный ли anon key?
+3. Включен ли CORS в Supabase?</pre>
+                `
+            }
+        }
+        
+        window.testRegistration = async () => {
+            const testUser = {
+                username: 'test_' + Math.random().toString(36).substring(7),
+                email: `test_${Date.now()}@test.com`,
+                password: '123456'
+            }
+            
+            const output = document.getElementById('output')
+            output.innerHTML = `⏳ Тестируем регистрацию с:\n${JSON.stringify(testUser, null, 2)}`
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: testUser.email,
+                    password: testUser.password,
+                    options: {
+                        data: { username: testUser.username }
+                    }
+                })
+                
+                if (error) throw error
+                
+                output.innerHTML = `
+                    <h3 class="success">✅ Тестовая регистрация прошла!</h3>
+                    <p>Пользователь создан в Auth</p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>Проверь в Supabase:</p>
+                    <ul>
+                        <li>Authentication → Users</li>
+                        <li>Table Editor → profiles</li>
+                    </ul>
+                `
+                
+            } catch (err) {
+                output.innerHTML = `
+                    <h3 class="error">❌ Ошибка регистрации</h3>
+                    <p>${err.message}</p>
+                `
+            }
+        }
+        
+        window.checkTables = async () => {
+            const output = document.getElementById('output')
+            output.innerHTML = '⏳ Проверяю таблицы...'
+            
+            try {
+                // Проверяем есть ли таблицы
+                const { data: profiles, error: profilesError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .limit(5)
+                
+                if (profilesError) {
+                    output.innerHTML = `
+                        <h3 class="error">❌ Ошибка таблицы profiles</h3>
+                        <p>${profilesError.message}</p>
+                        <pre>Создай таблицу через SQL в Supabase!</pre>
+                    `
+                    return
+                }
+                
+                output.innerHTML = `
+                    <h3 class="success">✅ Таблица profiles работает</h3>
+                    <p>Найдено записей: ${profiles.length}</p>
+                    <pre>${JSON.stringify(profiles, null, 2)}</pre>
+                `
+                
+            } catch (err) {
+                output.innerHTML = `<p class="error">❌ ${err.message}</p>`
+            }
+        }
+    </script>
+</body>
+</html>

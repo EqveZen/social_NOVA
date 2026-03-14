@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA — Лента</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .feed-container {
+            width: 600px;
+            max-width: 90%;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .user-info {
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            width: auto;
+            padding: 8px 20px;
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="card feed-container">
+        <div class="header">
+            <div class="logo" style="font-size: 32px; margin: 0;">NOVA</div>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        </div>
+        
+        <div id="userInfo" class="user-info">
+            Загрузка...
+        </div>
+        
+        <div style="text-align: center; padding: 40px 0;">
+            <p>🚀 Добро пожаловать!</p>
+            <p>Здесь будет лента постов...</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { checkAuth, logout } from './js/auth.js'
+        
+        window.logout = logout
+        
+        const user = await checkAuth()
+        
+        if (user) {
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('username')
+                .eq('id', user.id)
+                .single()
+            
+            document.getElementById('userInfo').innerHTML = `
+                <strong>Привет, ${profile?.username || 'пользователь'}!</strong><br>
+                <small>${user.email}</small>
+            `
+        }
+    </script>
+</body>
+</html>

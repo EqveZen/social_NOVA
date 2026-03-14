@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA — Вход</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="reactions">
+        <div class="reaction heart"></div>
+        <div class="reaction star"></div>
+        <div class="reaction like"></div>
+        <div class="reaction heart"></div>
+        <div class="reaction star"></div>
+        <div class="reaction like"></div>
+    </div>
+
+    <div class="card">
+        <div class="logo">NOVA</div>
+        
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="email" id="loginEmail" required>
+                <label>Почта</label>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="loginPassword" required>
+                <label>Пароль</label>
+            </div>
+            
+            <button type="submit">Войти</button>
+            
+            <div class="signup">
+                Нет аккаунта? <a href="reg.html">Создать!</a>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { login } from './js/auth.js'
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const email = document.getElementById('loginEmail').value.trim()
+            const password = document.getElementById('loginPassword').value
+            
+            await login(email, password)
+        })
+    </script>
+</body>
+</html>
