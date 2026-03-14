@@ -1,4 +1,6 @@
+/* css/profile.css */
 
+/* Базовые стили */
 body {
     margin: 0;
     padding: 0;
@@ -14,17 +16,75 @@ body {
     padding: 30px 20px;
 }
 
-/* Шапка профиля */
+/* ===== НАВИГАЦИЯ ===== */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 10px 0;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #EB670E;
+    margin: 0;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    flex: 0 1 auto;
+    padding: 8px 16px;
+    background: transparent;
+    color: #262626;
+    font-weight: 600;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: #f0f0f0;
+    transform: none;
+    box-shadow: none;
+}
+
+.nav-btn.active {
+    background: #EB670E;
+    color: white;
+}
+
+.logout-btn {
+    background: #ed4956 !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+}
+
+/* ===== ШАПКА ПРОФИЛЯ ===== */
 .profile-header {
     display: flex;
-    align-items: center;
     gap: 50px;
     margin-bottom: 44px;
     padding-bottom: 44px;
     border-bottom: 1px solid #dbdbdb;
+    flex-wrap: wrap;
 }
 
 /* Аватар */
+.avatar-section {
+    flex-shrink: 0;
+}
+
 .avatar {
     width: 150px;
     height: 150px;
@@ -41,6 +101,7 @@ body {
     overflow: hidden;
     border: 3px solid #fff;
     box-shadow: 0 0 0 1px #dbdbdb;
+    margin: 0 auto;
 }
 
 .avatar:hover::after {
@@ -70,6 +131,7 @@ body {
 /* Информация профиля */
 .profile-info {
     flex: 1;
+    min-width: 280px;
 }
 
 .profile-name-section {
@@ -108,6 +170,7 @@ body {
     display: flex;
     gap: 40px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 .stat {
@@ -144,13 +207,14 @@ body {
     text-decoration: underline;
 }
 
-/* Форма редактирования */
+/* ===== ФОРМА РЕДАКТИРОВАНИЯ ===== */
 .edit-form {
     background: #fff;
     border: 1px solid #dbdbdb;
     border-radius: 12px;
     padding: 20px;
     margin-top: 20px;
+    margin-bottom: 30px;
     display: none;
 }
 
@@ -168,6 +232,7 @@ body {
     display: flex;
     gap: 10px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 .save-btn {
@@ -183,50 +248,7 @@ body {
     padding: 7px 16px !important;
 }
 
-/* Навигация */
-.nav-menu {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 30px;
-    background: #fff;
-    border-bottom: 1px solid #dbdbdb;
-    padding: 10px 0;
-}
-
-.nav-btn {
-    flex: 0 1 auto;
-    padding: 10px 20px;
-    background: transparent;
-    color: #262626;
-    font-weight: 600;
-    border-radius: 0;
-    border-bottom: 2px solid transparent;
-}
-
-.nav-btn:hover {
-    transform: none;
-    box-shadow: none;
-    background: transparent;
-}
-
-.nav-btn.active {
-    background: transparent;
-    color: #0095f6;
-    border-bottom-color: #0095f6;
-}
-
-/* Логотип */
-.logo {
-    font-size: 32px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #EB670E;
-    margin: 0;
-    animation: none;
-    text-shadow: none;
-}
-
-/* Сетка постов */
+/* ===== СЕТКА ПОСТОВ ===== */
 .posts-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -238,7 +260,6 @@ body {
     position: relative;
     aspect-ratio: 1;
     background: #f5f5f5;
-    border-radius: 0;
     overflow: hidden;
     cursor: pointer;
 }
@@ -305,17 +326,161 @@ body {
     background: #0095f6;
 }
 
-/* Шапка с навигацией */
-.top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 10px 0;
+/* ===== АДАПТАЦИЯ ПОД ТЕЛЕФОНЫ ===== */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px 12px;
+    }
+
+    /* Навигация */
+    .top-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .logo {
+        text-align: center;
+    }
+
+    .nav-buttons {
+        justify-content: center;
+    }
+
+    /* Шапка профиля */
+    .profile-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 36px;
+    }
+
+    .profile-name-section {
+        justify-content: center;
+    }
+
+    .profile-stats {
+        justify-content: center;
+        gap: 30px;
+    }
+
+    .stat {
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+
+    /* Сетка постов */
+    .posts-grid {
+        gap: 3px;
+    }
+
+    .post-overlay {
+        display: none; /* На телефонах оверлей не нужен */
+    }
 }
 
-.logout-btn {
-    width: auto !important;
-    padding: 8px 20px !important;
-    background: #ed4956 !important;
+@media (max-width: 480px) {
+    .profile-name-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-stats {
+        gap: 20px;
+    }
+
+    .posts-grid {
+        gap: 2px;
+    }
+}
+
+/* ===== ЛЕНТА (FEED) ===== */
+.feed-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.feed-post {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 24px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    gap: 10px;
+}
+
+.post-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2A3582, #EB670E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.post-username {
+    font-weight: 600;
+    color: #262626;
+}
+
+.post-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: #f5f5f5;
+}
+
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.post-actions {
+    display: flex;
+    gap: 16px;
+    padding: 14px;
+}
+
+.post-likes {
+    font-weight: 600;
+    padding: 0 14px 8px;
+}
+
+.post-caption {
+    padding: 0 14px 14px;
+    font-size: 14px;
+}
+
+.post-time {
+    padding: 0 14px 14px;
+    color: #8e8e8e;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .feed-container {
+        padding: 0;
+    }
+    
+    .feed-post {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+    }
 }
