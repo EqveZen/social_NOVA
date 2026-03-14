@@ -2,62 +2,56 @@
 import { supabase } from './supabase.js'
 
 let currentUser = null
-let allUsers = []
+let allChats = []
 
 export async function initMessages() {
-    // Получаем текущего пользователя
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     
     if (!currentUser) return
     
-    // Загружаем чаты
     await loadChats()
-    
-    // Загружаем всех пользователей для нового чата
-    await loadUsers()
-    
-    // Настраиваем поиск
-    setupSearch()
+    setupRealtime()
 }
 
 // Загрузка чатов
 async function loadChats() {
-    // Получаем все чаты пользователя
-    const { data: participations, error } = await supabase
+    const { data: chats, error } = await supabase
         .from('chat_participants')
         .select(`
             chat_id,
             chats (
                 id,
                 last_message,
-                last_message_time
+                last_message_time,
+                last_message_user
             )
         `)
         .eq('user_id', currentUser.id)
+        .order('last_message_time', { foreignTable: 'chats', ascending: false })
     
     if (error) {
         console.error('Ошибка загрузки чатов:', error)
         return
     }
     
-    if (!participations || participations.length === 0) {
-        return // Показываем пустой список
-    }
+    if (!chats || chats.length === 0) return
     
-    // Для каждого чата загружаем собеседника
     const chatsList = document.getElementById('chatsList')
-    chatsList.innerHTML = ''
+    if (!chatsList) return
     
-    for (const p of participations) {
-        await loadChatPreview(p.chat_id, chatsList)
+    chatsList.innerHTML = ''
+    allChats = []
+    
+    for (const item of chats) {
+        await loadChatDetails(item.chat_id, chatsList)
     }
 }
 
-// Загрузка превью чата
-async function loadChatPreview(chatId, container) {
+// Загрузка деталей чата
+async function loadChatDetails(chatId, container) {
     // Получаем собеседника
-    const { data: participants, error } = await supabase
+    const { data: participants } = await supabase
         .from('chat_participants')
         .select(`
             user_id,
@@ -69,156 +63,89 @@ async function loadChatPreview(chatId, container) {
         .eq('chat_id', chatId)
         .neq('user_id', currentUser.id)
     
-    if (error || !participants || participants.length === 0) return
+    if (!participants || participants.length === 0) return
     
     const otherUser = participants[0].profiles
     
     // Получаем последнее сообщение
     const { data: messages } = await supabase
         .from('messages')
-        .select('content, created_at, read')
+        .select('*')
         .eq('chat_id', chatId)
         .order('created_at', { ascending: false })
         .limit(1)
     
     const lastMessage = messages && messages[0]
     
-    // Создаем элемент чата
-    const chatElement = document.createElement('div')
-    chatElement.className = 'chat-item'
-    chatElement.onclick = () => window.location.href = `chat.html?id=${chatId}`
+    // Считаем непрочитанные
+    const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('chat_id', chatId)
+        .neq('user_id', currentUser.id)
+        .eq('read', false)
     
-    chatElement.innerHTML = `
-        <div class="chat-avatar">
-            ${otherUser.username ? otherUser.username[0].toUpperCase() : '?'}
-        </div>
+    const chatElement = createChatElement(chatId, otherUser, lastMessage, count)
+    container.appendChild(chatElement)
+    
+    allChats.push({
+        element: chatElement,
+        name: (otherUser.username || '').toLowerCase(),
+        lastMessage: lastMessage?.content || ''
+    })
+}
+
+// Создание элемента чата
+function createChatElement(chatId, user, lastMessage, unreadCount) {
+    const div = document.createElement('div')
+    div.className = 'chat-item'
+    div.setAttribute('data-chat-id', chatId)
+    div.setAttribute('data-name', (user.username || '').toLowerCase())
+    div.onclick = () => window.location.href = `chat.html?id=${chatId}`
+    
+    const time = lastMessage ? formatTime(lastMessage.created_at) : ''
+    const messageText = lastMessage ? lastMessage.content : 'Нет сообщений'
+    const unreadBadge = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''
+    
+    div.innerHTML = `
+        <div class="chat-avatar">${user.username ? user.username[0].toUpperCase() : '?'}</div>
         <div class="chat-info">
             <div class="chat-name-row">
-                <span class="chat-name">${otherUser.username || 'Пользователь'}</span>
-                <span class="chat-time">${lastMessage ? formatTime(lastMessage.created_at) : ''}</span>
+                <span class="chat-name">${user.username || 'Пользователь'}</span>
+                <span class="chat-time">${time}</span>
             </div>
             <div class="chat-last-message">
-                <span class="message-text">${lastMessage ? lastMessage.content : 'Нет сообщений'}</span>
-                ${lastMessage && !lastMessage.read ? '<span class="unread-badge">1</span>' : ''}
+                <span class="message-text">${messageText}</span>
+                ${unreadBadge}
             </div>
         </div>
     `
     
-    container.appendChild(chatElement)
+    return div
 }
 
-// Загрузка всех пользователей
-async function loadUsers() {
-    const { data: users, error } = await supabase
-        .from('profiles')
-        .select('id, username, email, avatar_url')
-        .neq('id', currentUser.id)
+// Фильтр чатов
+export function filterChats() {
+    const searchText = document.getElementById('searchInput')?.value.toLowerCase() || ''
     
-    if (error) {
-        console.error('Ошибка загрузки пользователей:', error)
-        return
-    }
-    
-    allUsers = users
-    displayUsers(users)
-}
-
-// Отображение пользователей
-function displayUsers(users) {
-    const usersList = document.getElementById('usersList')
-    if (!usersList) return
-    
-    usersList.innerHTML = ''
-    
-    users.forEach(user => {
-        const userElement = document.createElement('div')
-        userElement.className = 'user-item'
-        userElement.onclick = () => createNewChat(user.id)
-        
-        userElement.innerHTML = `
-            <div class="user-avatar">
-                ${user.username ? user.username[0].toUpperCase() : '?'}
-            </div>
-            <div class="user-info">
-                <div class="name">${user.username || 'Пользователь'}</div>
-                <div class="email">${user.email}</div>
-            </div>
-        `
-        
-        usersList.appendChild(userElement)
-    })
-}
-
-// Поиск пользователей
-function setupSearch() {
-    const searchInput = document.getElementById('searchInput')
-    if (!searchInput) return
-    
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase()
-        
-        if (query.trim() === '') {
-            displayUsers(allUsers)
+    allChats.forEach(chat => {
+        if (chat.name.includes(searchText) || chat.lastMessage.toLowerCase().includes(searchText)) {
+            chat.element.style.display = 'flex'
         } else {
-            const filtered = allUsers.filter(user => 
-                (user.username && user.username.toLowerCase().includes(query)) ||
-                (user.email && user.email.toLowerCase().includes(query))
-            )
-            displayUsers(filtered)
+            chat.element.style.display = 'none'
         }
     })
 }
 
-// Создание нового чата
-async function createNewChat(otherUserId) {
-    // Проверяем, есть ли уже чат с этим пользователем
-    const { data: existingChats, error } = await supabase
-        .rpc('get_existing_chat', {
-            user1_id: currentUser.id,
-            user2_id: otherUserId
-        })
-    
-    if (existingChats && existingChats.length > 0) {
-        // Чат уже существует - переходим в него
-        window.location.href = `chat.html?id=${existingChats[0]}`
-        return
-    }
-    
-    // Создаем новый чат
-    const { data: chat, error: chatError } = await supabase
-        .from('chats')
-        .insert({})
-        .select()
-        .single()
-    
-    if (chatError) {
-        alert('Ошибка создания чата')
-        return
-    }
-    
-    // Добавляем участников
-    const { error: participantsError } = await supabase
-        .from('chat_participants')
-        .insert([
-            { chat_id: chat.id, user_id: currentUser.id },
-            { chat_id: chat.id, user_id: otherUserId }
-        ])
-    
-    if (participantsError) {
-        alert('Ошибка добавления участников')
-        return
-    }
-    
-    // Переходим в новый чат
-    window.location.href = `chat.html?id=${chat.id}`
-}
-
-export function openNewChat() {
-    document.getElementById('newChatModal').classList.add('show')
-}
-
-export function closeModal() {
-    document.getElementById('newChatModal').classList.remove('show')
+// Realtime обновления
+function setupRealtime() {
+    supabase
+        .channel('messages-channel')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'messages' },
+            () => loadChats()
+        )
+        .subscribe()
 }
 
 // Форматирование времени
@@ -228,7 +155,8 @@ function formatTime(timestamp) {
     
     if (date.toDateString() === now.toDateString()) {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    } else {
-        return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
     }
+    return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
 }
+
+export { loadChats }
