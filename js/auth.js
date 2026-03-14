@@ -2,47 +2,34 @@
 import { supabase } from './supabase.js'
 
 export async function register(username, email, password) {
-    console.log('🚀 ===== НАЧАЛО РЕГИСТРАЦИИ =====')
-    console.log('📝 Данные:', { username, email, password: '***' })
+    console.log('🚀 Начинаем регистрацию:', { username, email })
     
     try {
-        // 1. Проверяем подключение
-        console.log('📡 Проверка подключения к Supabase...')
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-        console.log('Сессия:', sessionData, 'Ошибка:', sessionError)
-
-        // 2. Проверяем, свободен ли логин
-        console.log('🔍 Проверяем логин:', username)
+        // 1. Проверяем, свободен ли логин
         const { data: existingUser, error: checkError } = await supabase
             .from('profiles')
             .select('username')
             .eq('username', username)
             .maybeSingle()
         
-        console.log('Результат проверки логина:', { existingUser, checkError })
-        
         if (existingUser) {
             alert('❌ Этот логин уже занят!')
             return
         }
 
-        // 3. Проверяем почту
-        console.log('🔍 Проверяем почту:', email)
+        // 2. Проверяем почту
         const { data: existingEmail, error: checkEmailError } = await supabase
             .from('profiles')
             .select('email')
             .eq('email', email)
             .maybeSingle()
         
-        console.log('Результат проверки почты:', { existingEmail, checkEmailError })
-        
         if (existingEmail) {
             alert('❌ Эта почта уже зарегистрирована!')
             return
         }
 
-        // 4. Создаем пользователя
-        console.log('📝 Отправляем запрос на создание пользователя...')
+        // 3. Создаем пользователя
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: password,
@@ -53,43 +40,22 @@ export async function register(username, email, password) {
             }
         })
 
-        console.log('📦 Ответ от Supabase Auth:', authData)
-        console.log('❌ Ошибка от Supabase Auth:', authError)
-
-        if (authError) {
-            console.error('Ошибка создания пользователя:', authError)
-            alert('Ошибка: ' + authError.message)
-            return
-        }
+        if (authError) throw authError
 
         if (authData?.user) {
-            console.log('✅ Пользователь создан в Auth! ID:', authData.user.id)
-            console.log('📧 Проверка почты требуется:', authData.user?.email_confirmed_at ? 'Нет' : 'Да')
+            console.log('✅ Пользователь создан!')
             
-            setTimeout(async () => {
-                console.log('🔍 Проверяем создание профиля...')
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', authData.user.id)
-                    .maybeSingle()
-                
-                if (profile) {
-                    console.log('✅ Профиль успешно создан!', profile)
-                } else {
-                    console.log('❌ Профиль НЕ создался. Ошибка:', profileError)
-                }
-            }, 3000)
+            // Отключаем подтверждение почты для теста
+            // или просто показываем сообщение
             
-            alert('✅ Регистрация успешна! Проверьте почту для подтверждения.')
+            alert('✅ Регистрация успешна! Сейчас войдём...')
             
-            setTimeout(() => {
-                window.location.href = '/log.html'
-            }, 2000)
+            // ✅ СРАЗУ ЛОГИНИМСЯ И ПЕРЕХОДИМ В ЧАТЫ
+            await login(email, password)
         }
 
     } catch (err) {
-        console.error('❌ КРИТИЧЕСКАЯ ОШИБКА:', err)
+        console.error('❌ ОШИБКА:', err)
         alert('Ошибка при регистрации: ' + err.message)
     }
 }
@@ -103,10 +69,10 @@ export async function login(email, password) {
             password: password
         })
 
-        console.log('Ответ от Auth:', { data, error })
+        console.log('📦 Ответ от Auth:', { data, error })
 
         if (error) {
-            console.error('Ошибка входа:', error)
+            console.error('❌ Ошибка входа:', error)
             alert('❌ ' + (error.message === 'Invalid login credentials' ? 'Неверная почта или пароль!' : error.message))
             return
         }
@@ -114,23 +80,30 @@ export async function login(email, password) {
         if (data.user) {
             console.log('✅ Вход выполнен!')
             
+            // Получаем профиль
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('username')
                 .eq('id', data.user.id)
                 .single()
             
+            console.log('📋 Профиль:', profile)
+            
+            // Сохраняем в localStorage
             localStorage.setItem('user', JSON.stringify({
                 id: data.user.id,
                 email: data.user.email,
                 username: profile?.username || data.user.user_metadata?.username
             }))
             
-            window.location.href = './feed.html'
+            console.log('➡️ Перенаправление на список чатов...')
+            
+            // ✅ МЕНЯЕМ С feed.html НА messages.html
+            window.location.href = 'messages.html'
         }
 
     } catch (err) {
-        console.error('❌ ОШИБКА:', err)
+        console.error('❌ КРИТИЧЕСКАЯ ОШИБКА:', err)
         alert('Ошибка при входе: ' + err.message)
     }
 }
