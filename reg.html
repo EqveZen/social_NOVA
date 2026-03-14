@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NOVA — Регистрация</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/auth.css">  <!-- только для auth страниц -->
+    <link rel="stylesheet" href="css/auth.css">
 </head>
-<body>
+<body class="auth-page">
     <div class="reactions">
         <div class="reaction heart"></div>
         <div class="reaction star"></div>
@@ -17,8 +17,8 @@
         <div class="reaction like"></div>
     </div>
 
-    <div class="card">
-        <div class="logo">NOVA</div>
+    <div class="auth-card">
+        <div class="auth-logo">NOVA</div>
         
         <form id="registerForm">
             <div class="input-group">
@@ -33,7 +33,7 @@
             
             <div class="input-group">
                 <input type="password" id="regPassword" required minlength="6">
-                <label>Пароль (мин. 6 символов)</label>
+                <label>Пароль</label>
             </div>
             
             <button type="submit">Зарегистрироваться</button>
@@ -53,16 +53,6 @@
             const username = document.getElementById('regUsername').value.trim()
             const email = document.getElementById('regEmail').value.trim()
             const password = document.getElementById('regPassword').value
-            
-            if (username.length < 3) {
-                alert('Логин должен быть минимум 3 символа')
-                return
-            }
-            
-            if (password.length < 6) {
-                alert('Пароль должен быть минимум 6 символов')
-                return
-            }
             
             await register(username, email, password)
         })
