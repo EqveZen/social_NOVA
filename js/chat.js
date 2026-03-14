@@ -190,7 +190,13 @@ export async function sendMessage() {
     const input = document.getElementById('messageInput')
     const content = input.value.trim()
     
-    if (!content) return
+    // После успешной отправки сообщения
+if (!error) {
+    // Обновляем список чатов (если открыт)
+    if (window.opener && !window.opener.closed) {
+        window.opener.location.reload()
+    }
+}n
     
     // Очищаем input и отключаем кнопку
     input.value = ''
