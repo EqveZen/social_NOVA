@@ -9,11 +9,18 @@
 <body class="auth-page">
     <div class="auth-container">
         <div class="auth-card">
+            <!-- Логотип как в Telegram -->
             <div class="auth-logo">
+                <div class="auth-logo-icon">
+                    <svg viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                </div>
                 <h1>NOVA</h1>
                 <p>мессенджер</p>
             </div>
             
+            <!-- Форма регистрации -->
             <form id="registerForm" class="auth-form">
                 <div class="auth-input-group">
                     <input type="text" class="auth-input" id="regUsername" placeholder="Имя пользователя" required>
@@ -27,7 +34,7 @@
                     <input type="password" class="auth-input" id="regPassword" placeholder="Пароль" required minlength="6">
                 </div>
                 
-                <!-- КНОПКА ПО ЦЕНТРУ -->
+                <!-- Кнопка как в Telegram -->
                 <button type="submit" class="auth-button">Зарегистрироваться</button>
                 
                 <div class="auth-links">
