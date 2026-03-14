@@ -13,31 +13,50 @@ export async function initMessages() {
     if (!currentUser) return
     
     await loadChats()
+    setupRealtime()
 }
 
-// Загрузка чатов (УПРОЩЁННО)
+// Загрузка чатов (ТОЛЬКО С СООБЩЕНИЯМИ)
 async function loadChats() {
     try {
-        // Получаем все чаты пользователя
-        const { data: participations, error: partError } = await supabase
-            .from('chat_participants')
+        // Получаем все чаты, где есть сообщения с текущим пользователем
+        const { data: messages, error: msgError } = await supabase
+            .from('messages')
             .select('chat_id')
             .eq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
         
-        if (partError) throw partError
+        if (msgError) throw msgError
         
-        if (!participations || participations.length === 0) {
+        // Также получаем чаты, где писали текущему пользователю
+        const { data: receivedMessages, error: receivedError } = await supabase
+            .from('messages')
+            .select('chat_id')
+            .neq('user_id', currentUser.id)
+            .order('created_at', { ascending: false })
+        
+        if (receivedError) throw receivedError
+        
+        // Объединяем и удаляем дубликаты
+        const allMessageChats = [
+            ...(messages || []).map(m => m.chat_id),
+            ...(receivedMessages || []).map(m => m.chat_id)
+        ]
+        
+        const uniqueChatIds = [...new Set(allMessageChats)]
+        
+        console.log('📦 Найдено чатов с сообщениями:', uniqueChatIds.length)
+        
+        if (uniqueChatIds.length === 0) {
             showEmptyChats()
             return
         }
-        
-        const chatIds = participations.map(p => p.chat_id)
         
         // Получаем информацию о чатах
         const { data: chats, error: chatsError } = await supabase
             .from('chats')
             .select('*')
-            .in('id', chatIds)
+            .in('id', uniqueChatIds)
             .order('last_message_time', { ascending: false, nullsLast: true })
         
         if (chatsError) throw chatsError
@@ -71,7 +90,7 @@ async function loadChatDetails(chat, container) {
         const otherUserId = participants.find(p => p.user_id !== currentUser.id)?.user_id
         if (!otherUserId) return
         
-        // Получаем профиль
+        // Получаем профиль собеседника
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, avatar_url')
@@ -80,25 +99,28 @@ async function loadChatDetails(chat, container) {
         
         if (profileError) throw profileError
         
-        // Получаем последнее сообщение
-        const { data: messages, error: msgError } = await supabase
+        // Получаем последнее сообщение в чате
+        const { data: lastMessages, error: lastError } = await supabase
             .from('messages')
-            .select('content, created_at')
+            .select('content, created_at, user_id, read')
             .eq('chat_id', chat.id)
             .order('created_at', { ascending: false })
             .limit(1)
         
-        if (msgError) throw msgError
+        if (lastError) throw lastError
         
-        const lastMessage = messages && messages[0]
+        const lastMessage = lastMessages && lastMessages[0]
         
-        // Считаем непрочитанные
+        // Если нет сообщений - пропускаем чат
+        if (!lastMessage) return
+        
+        // Считаем непрочитанные сообщения
         const { count, error: countError } = await supabase
             .from('messages')
             .select('*', { count: 'exact', head: true })
             .eq('chat_id', chat.id)
-            .neq('user_id', currentUser.id)
-            .eq('read', false)
+            .eq('user_id', otherUserId)  // сообщения от собеседника
+            .eq('read', false)            // непрочитанные
         
         if (countError) throw countError
         
@@ -117,7 +139,14 @@ function createChatElement(chatId, user, lastMessage, unreadCount) {
     div.onclick = () => window.location.href = `chat.html?id=${chatId}`
     
     const time = lastMessage ? formatTime(lastMessage.created_at) : ''
-    const messageText = lastMessage ? lastMessage.content : 'Нет сообщений'
+    
+    // Показываем, кто написал последнее сообщение
+    let messagePrefix = ''
+    if (lastMessage.user_id === currentUser.id) {
+        messagePrefix = 'Вы: '
+    }
+    
+    const messageText = lastMessage ? `${messagePrefix}${lastMessage.content}` : 'Нет сообщений'
     const unreadBadge = unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''
     
     div.innerHTML = `
@@ -144,20 +173,53 @@ function showEmptyChats() {
     
     chatsList.innerHTML = `
         <div class="empty-chats">
-            <h3>У вас пока нет чатов</h3>
+            <h3>У вас пока нет сообщений</h3>
             <p>Найдите людей и начните общение</p>
             <button class="start-chat-btn" onclick="window.location.href='search.html'">Найти собеседника</button>
         </div>
     `
 }
 
+// Realtime обновления
+function setupRealtime() {
+    supabase
+        .channel('messages-channel')
+        .on('postgres_changes', 
+            { event: 'INSERT', schema: 'public', table: 'messages' },
+            (payload) => {
+                console.log('🔄 Новое сообщение, обновляем чаты')
+                
+                // Проверяем, относится ли сообщение к текущему пользователю
+                if (payload.new.user_id === currentUser.id || 
+                    payload.new.chat_id) {
+                    loadChats()
+                }
+            }
+        )
+        .subscribe()
+}
+
 // Форматирование времени
 function formatTime(timestamp) {
     const date = new Date(timestamp)
     const now = new Date()
+    const yesterday = new Date(now)
+    yesterday.setDate(yesterday.getDate() - 1)
     
+    // Сегодня
     if (date.toDateString() === now.toDateString()) {
         return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
-    return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
+    // Вчера
+    else if (date.toDateString() === yesterday.toDateString()) {
+        return 'вчера'
+    }
+    // Эта неделя
+    else if (now.getTime() - date.getTime() < 7 * 24 * 60 * 60 * 1000) {
+        return date.toLocaleDateString([], { weekday: 'short' })
+    }
+    // Давно
+    else {
+        return date.toLocaleDateString([], { day: '2-digit', month: '2-digit' })
+    }
 }
