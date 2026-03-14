@@ -7,6 +7,8 @@ let otherUser = null
 let messagesSubscription = null
 
 export async function initChat(chatId) {
+    console.log('🚀 Загрузка чата:', chatId)
+    
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     currentChatId = chatId
@@ -22,59 +24,70 @@ export async function initChat(chatId) {
 
 // Загрузка информации о чате
 async function loadChatInfo() {
-    const { data: participants } = await supabase
-        .from('chat_participants')
-        .select(`
-            user_id,
-            profiles:user_id (
-                username,
-                email,
-                avatar_url,
-                bio
-            )
-        `)
-        .eq('chat_id', currentChatId)
-        .neq('user_id', currentUser.id)
-    
-    if (!participants || participants.length === 0) return
-    
-    otherUser = participants[0].profiles
-    
-    document.getElementById('chatUserName').textContent = otherUser.username || 'Пользователь'
-    document.getElementById('chatAvatar').textContent = 
-        otherUser.username ? otherUser.username[0].toUpperCase() : '?'
+    try {
+        const { data: participants, error } = await supabase
+            .from('chat_participants')
+            .select(`
+                user_id,
+                profiles:profiles!inner (
+                    username,
+                    email,
+                    avatar_url,
+                    bio
+                )
+            `)
+            .eq('chat_id', currentChatId)
+            .neq('user_id', currentUser.id)
+        
+        if (error) throw error
+        
+        if (!participants || participants.length === 0) return
+        
+        otherUser = participants[0].profiles
+        
+        document.getElementById('chatUserName').textContent = otherUser.username || 'Пользователь'
+        document.getElementById('chatAvatar').textContent = 
+            otherUser.username ? otherUser.username[0].toUpperCase() : '?'
+            
+    } catch (error) {
+        console.error('❌ Ошибка загрузки информации:', error)
+    }
 }
 
 // Загрузка сообщений
 async function loadMessages() {
-    const { data: messages, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('chat_id', currentChatId)
-        .order('created_at', { ascending: true })
-    
-    if (error) {
-        console.error('Ошибка загрузки сообщений:', error)
-        return
+    try {
+        const { data: messages, error } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('chat_id', currentChatId)
+            .order('created_at', { ascending: true })
+        
+        if (error) throw error
+        
+        console.log('📦 Сообщения:', messages)
+        
+        const container = document.getElementById('messagesContainer')
+        container.innerHTML = ''
+        
+        let lastDate = null
+        
+        messages.forEach(msg => {
+            const msgDate = new Date(msg.created_at).toDateString()
+            
+            if (msgDate !== lastDate) {
+                addDateDivider(container, msg.created_at)
+                lastDate = msgDate
+            }
+            
+            addMessageToContainer(msg, container)
+        })
+        
+        scrollToBottom()
+        
+    } catch (error) {
+        console.error('❌ Ошибка загрузки сообщений:', error)
     }
-    
-    const container = document.getElementById('messagesContainer')
-    container.innerHTML = ''
-    
-    let lastDate = null
-    
-    messages.forEach(msg => {
-        const msgDate = new Date(msg.created_at).toDateString()
-        
-        if (msgDate !== lastDate) {
-            addDateDivider(container, msg.created_at)
-            lastDate = msgDate
-        }
-        
-        addMessageToContainer(msg, container)
-    })
-    
-    scrollToBottom()
 }
 
 // Добавление сообщения
@@ -126,6 +139,7 @@ function subscribeToMessages() {
                 filter: `chat_id=eq.${currentChatId}`
             }, 
             payload => {
+                console.log('📨 Новое сообщение:', payload.new)
                 const container = document.getElementById('messagesContainer')
                 addMessageToContainer(payload.new, container)
                 scrollToBottom()
@@ -158,8 +172,9 @@ export async function sendMessage() {
         })
     
     if (error) {
-        console.error('Ошибка отправки:', error)
+        console.error('❌ Ошибка отправки:', error)
         alert('Не удалось отправить сообщение')
+        return
     }
     
     // Обновляем последнее сообщение в чате
