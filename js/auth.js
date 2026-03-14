@@ -3,10 +3,9 @@ import { supabase } from './supabase.js'
 
 // РЕГИСТРАЦИЯ
 export async function register(username, email, password) {
-    console.log('🚀 Начинаем регистрацию:', { username, email })
+    console.log('🚀 Регистрация:', { username, email })
     
     try {
-        // Проверяем логин
         const { data: existingUser } = await supabase
             .from('profiles')
             .select('username')
@@ -18,7 +17,6 @@ export async function register(username, email, password) {
             return
         }
 
-        // Проверяем email
         const { data: existingEmail } = await supabase
             .from('profiles')
             .select('email')
@@ -30,7 +28,6 @@ export async function register(username, email, password) {
             return
         }
 
-        // Создаём пользователя
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: password,
@@ -42,14 +39,8 @@ export async function register(username, email, password) {
         if (authError) throw authError
 
         if (authData?.user) {
-            console.log('✅ Пользователь создан! ID:', authData.user.id)
-            
             alert('✅ Регистрация успешна! Сейчас войдём...')
-            
-            // Ждём 1 секунду и логинимся
-            setTimeout(async () => {
-                await login(email, password)
-            }, 1000)
+            await login(email, password)
         }
 
     } catch (err) {
@@ -60,7 +51,7 @@ export async function register(username, email, password) {
 
 // ВХОД
 export async function login(email, password) {
-    console.log('🚀 Попытка входа:', { email })
+    console.log('🚀 Вход:', { email })
     
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -71,20 +62,19 @@ export async function login(email, password) {
         if (error) throw error
 
         if (data.user) {
-            console.log('✅ Вход выполнен!')
+            console.log('✅ Вход выполнен')
             
             localStorage.setItem('user', JSON.stringify({
                 id: data.user.id,
                 email: data.user.email
             }))
             
-            console.log('➡️ Переход в чаты...')
             window.location.href = '/social_NOVA/messages.html'
         }
 
     } catch (err) {
         console.error('❌ Ошибка входа:', err)
-        alert('Ошибка входа: ' + err.message)
+        alert('❌ Неверный email или пароль')
     }
 }
 
@@ -108,7 +98,6 @@ export async function checkAuth() {
     return user
 }
 
-// Для глобального доступа
 window.register = register
 window.login = login
 window.logout = logout
