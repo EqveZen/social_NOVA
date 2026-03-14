@@ -1,65 +1,64 @@
 // js/auth.js
 import { supabase } from './supabase.js'
 
+// РЕГИСТРАЦИЯ
 export async function register(username, email, password) {
     console.log('🚀 Начинаем регистрацию:', { username, email })
     
     try {
-        // 1. Проверяем, свободен ли логин
-        const { data: existingUser, error: checkError } = await supabase
+        // Проверяем логин
+        const { data: existingUser } = await supabase
             .from('profiles')
             .select('username')
             .eq('username', username)
             .maybeSingle()
         
         if (existingUser) {
-            alert('❌ Этот логин уже занят!')
+            alert('❌ Логин занят!')
             return
         }
 
-        // 2. Проверяем почту
-        const { data: existingEmail, error: checkEmailError } = await supabase
+        // Проверяем email
+        const { data: existingEmail } = await supabase
             .from('profiles')
             .select('email')
             .eq('email', email)
             .maybeSingle()
         
         if (existingEmail) {
-            alert('❌ Эта почта уже зарегистрирована!')
+            alert('❌ Email занят!')
             return
         }
 
-        // 3. Создаем пользователя
+        // Создаём пользователя
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: email,
             password: password,
             options: {
-                data: {
-                    username: username
-                }
+                data: { username: username }
             }
         })
 
         if (authError) throw authError
 
         if (authData?.user) {
-            console.log('✅ Пользователь создан!')
-            
-            // Отключаем подтверждение почты для теста
-            // или просто показываем сообщение
+            console.log('✅ Пользователь создан! ID:', authData.user.id)
             
             alert('✅ Регистрация успешна! Сейчас войдём...')
             
-            // ✅ СРАЗУ ЛОГИНИМСЯ И ПЕРЕХОДИМ В ЧАТЫ
-            await login(email, password)
+            // Ждём 1 секунду и логинимся
+            setTimeout(async () => {
+                await login(email, password)
+            }, 1000)
         }
 
     } catch (err) {
-        console.error('❌ ОШИБКА:', err)
-        alert('Ошибка при регистрации: ' + err.message)
+        console.error('❌ Ошибка:', err)
+        alert('Ошибка: ' + err.message)
     }
 }
 
+// ВХОД
 export async function login(email, password) {
     console.log('🚀 Попытка входа:', { email })
     
@@ -69,68 +68,47 @@ export async function login(email, password) {
             password: password
         })
 
-        console.log('📦 Ответ от Auth:', { data, error })
-
-        if (error) {
-            console.error('❌ Ошибка входа:', error)
-            alert('❌ ' + (error.message === 'Invalid login credentials' ? 'Неверная почта или пароль!' : error.message))
-            return
-        }
+        if (error) throw error
 
         if (data.user) {
             console.log('✅ Вход выполнен!')
             
-            // Получаем профиль
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('username')
-                .eq('id', data.user.id)
-                .single()
-            
-            console.log('📋 Профиль:', profile)
-            
-            // Сохраняем в localStorage
             localStorage.setItem('user', JSON.stringify({
                 id: data.user.id,
-                email: data.user.email,
-                username: profile?.username || data.user.user_metadata?.username
+                email: data.user.email
             }))
             
-            console.log('➡️ Перенаправление на список чатов...')
-            
-            // ✅ МЕНЯЕМ С feed.html НА messages.html
-            window.location.href = 'messages.html'
+            console.log('➡️ Переход в чаты...')
+            window.location.href = '/nova-social/messages.html'
         }
 
     } catch (err) {
-        console.error('❌ КРИТИЧЕСКАЯ ОШИБКА:', err)
-        alert('Ошибка при входе: ' + err.message)
+        console.error('❌ Ошибка входа:', err)
+        alert('Ошибка входа: ' + err.message)
     }
 }
 
+// ВЫХОД
 export async function logout() {
-    try {
-        await supabase.auth.signOut()
-        localStorage.removeItem('user')
-        window.location.href = '/log.html'
-    } catch (err) {
-        console.error('Ошибка выхода:', err)
-    }
+    await supabase.auth.signOut()
+    localStorage.removeItem('user')
+    window.location.href = '/nova-social/log.html'
 }
 
+// ПРОВЕРКА АВТОРИЗАЦИИ
 export async function checkAuth() {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-        const currentPage = window.location.pathname
-        if (!currentPage.includes('log.html') && !currentPage.includes('reg.html')) {
-            window.location.href = '/log.html'
+        const path = window.location.pathname
+        if (!path.includes('log.html') && !path.includes('reg.html')) {
+            window.location.href = '/nova-social/log.html'
         }
     }
     return user
 }
 
-// Для onclick в HTML
+// Для глобального доступа
 window.register = register
 window.login = login
 window.logout = logout
