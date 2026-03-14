@@ -5,10 +5,17 @@ let currentUser = null
 let allChats = []
 
 export async function initMessages() {
+    console.log('🚀 Загрузка чатов...')
+    
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     
-    if (!currentUser) return
+    if (!currentUser) {
+        console.log('❌ Пользователь не авторизован')
+        return
+    }
+    
+    console.log('✅ Текущий пользователь:', currentUser.id)
     
     await loadChats()
     setupRealtime()
@@ -16,83 +23,107 @@ export async function initMessages() {
 
 // Загрузка чатов
 async function loadChats() {
-    const { data: chats, error } = await supabase
-        .from('chat_participants')
-        .select(`
-            chat_id,
-            chats (
-                id,
-                last_message,
-                last_message_time,
-                last_message_user
-            )
-        `)
-        .eq('user_id', currentUser.id)
-        .order('last_message_time', { foreignTable: 'chats', ascending: false })
-    
-    if (error) {
-        console.error('Ошибка загрузки чатов:', error)
-        return
-    }
-    
-    if (!chats || chats.length === 0) return
-    
-    const chatsList = document.getElementById('chatsList')
-    if (!chatsList) return
-    
-    chatsList.innerHTML = ''
-    allChats = []
-    
-    for (const item of chats) {
-        await loadChatDetails(item.chat_id, chatsList)
+    try {
+        // 1. Сначала получаем все chat_id где участвует пользователь
+        const { data: participations, error: partError } = await supabase
+            .from('chat_participants')
+            .select('chat_id')
+            .eq('user_id', currentUser.id)
+        
+        if (partError) throw partError
+        
+        console.log('📦 Участия:', participations)
+        
+        if (!participations || participations.length === 0) {
+            showEmptyChats()
+            return
+        }
+        
+        const chatIds = participations.map(p => p.chat_id)
+        
+        // 2. Получаем информацию о чатах
+        const { data: chats, error: chatsError } = await supabase
+            .from('chats')
+            .select('*')
+            .in('id', chatIds)
+            .order('last_message_time', { ascending: false })
+        
+        if (chatsError) throw chatsError
+        
+        console.log('📦 Чаты:', chats)
+        
+        // 3. Для каждого чата загружаем собеседника
+        const chatsList = document.getElementById('chatsList')
+        if (!chatsList) return
+        
+        chatsList.innerHTML = ''
+        allChats = []
+        
+        for (const chat of chats) {
+            await loadChatDetails(chat, chatsList)
+        }
+        
+    } catch (error) {
+        console.error('❌ Ошибка загрузки чатов:', error)
     }
 }
 
 // Загрузка деталей чата
-async function loadChatDetails(chatId, container) {
-    // Получаем собеседника
-    const { data: participants } = await supabase
-        .from('chat_participants')
-        .select(`
-            user_id,
-            profiles:user_id (
-                username,
-                avatar_url
-            )
-        `)
-        .eq('chat_id', chatId)
-        .neq('user_id', currentUser.id)
-    
-    if (!participants || participants.length === 0) return
-    
-    const otherUser = participants[0].profiles
-    
-    // Получаем последнее сообщение
-    const { data: messages } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('chat_id', chatId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-    
-    const lastMessage = messages && messages[0]
-    
-    // Считаем непрочитанные
-    const { count } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('chat_id', chatId)
-        .neq('user_id', currentUser.id)
-        .eq('read', false)
-    
-    const chatElement = createChatElement(chatId, otherUser, lastMessage, count)
-    container.appendChild(chatElement)
-    
-    allChats.push({
-        element: chatElement,
-        name: (otherUser.username || '').toLowerCase(),
-        lastMessage: lastMessage?.content || ''
-    })
+async function loadChatDetails(chat, container) {
+    try {
+        // Получаем собеседника (исправленный запрос)
+        const { data: participants, error: partError } = await supabase
+            .from('chat_participants')
+            .select(`
+                user_id,
+                profiles:profiles!inner (
+                    username,
+                    avatar_url
+                )
+            `)
+            .eq('chat_id', chat.id)
+            .neq('user_id', currentUser.id)
+        
+        if (partError) throw partError
+        
+        if (!participants || participants.length === 0) return
+        
+        const otherUser = participants[0].profiles
+        
+        // Получаем последнее сообщение
+        const { data: messages, error: msgError } = await supabase
+            .from('messages')
+            .select('*')
+            .eq('chat_id', chat.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+        
+        if (msgError) throw msgError
+        
+        const lastMessage = messages && messages[0]
+        
+        // Считаем непрочитанные
+        const { count, error: countError } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('chat_id', chat.id)
+            .neq('user_id', currentUser.id)
+            .eq('read', false)
+        
+        if (countError) throw countError
+        
+        const chatElement = createChatElement(chat.id, otherUser, lastMessage, count || 0)
+        container.appendChild(chatElement)
+        
+        allChats.push({
+            element: chatElement,
+            name: (otherUser.username || '').toLowerCase(),
+            lastMessage: lastMessage?.content || ''
+        })
+        
+    } catch (error) {
+        console.error('❌ Ошибка загрузки деталей чата:', error)
+    }
 }
 
 // Создание элемента чата
@@ -124,6 +155,20 @@ function createChatElement(chatId, user, lastMessage, unreadCount) {
     return div
 }
 
+// Показать пустой список
+function showEmptyChats() {
+    const chatsList = document.getElementById('chatsList')
+    if (!chatsList) return
+    
+    chatsList.innerHTML = `
+        <div class="empty-chats">
+            <h3>У вас пока нет чатов</h3>
+            <p>Найдите людей и начните общение</p>
+            <button class="start-chat-btn" onclick="window.location.href='search.html'">Найти собеседника</button>
+        </div>
+    `
+}
+
 // Фильтр чатов
 export function filterChats() {
     const searchText = document.getElementById('searchInput')?.value.toLowerCase() || ''
@@ -143,7 +188,10 @@ function setupRealtime() {
         .channel('messages-channel')
         .on('postgres_changes', 
             { event: 'INSERT', schema: 'public', table: 'messages' },
-            () => loadChats()
+            () => {
+                console.log('🔄 Новое сообщение, обновляем чаты')
+                loadChats()
+            }
         )
         .subscribe()
 }
