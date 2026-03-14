@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOVA • Профиль</title>
-    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/profile-telegram.css">
 </head>
 <body class="profile-page">
-    <!-- Верхняя панель как в Telegram -->
+    <!-- Верхняя панель -->
     <div class="profile-header">
         <div class="profile-header-left">
             <button class="profile-back-btn" onclick="window.location.href='messages.html'">
@@ -17,13 +17,14 @@
             </button>
             <span class="profile-header-title">Профиль</span>
         </div>
-        <div class="profile-header-right">
-            <button class="profile-header-btn" onclick="window.location.href='settings.html'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94 0 .31.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
-                </svg>
-            </button>
-        </div>
+        
+        <!-- КНОПКА В МЕССЕНДЖЕР -->
+        <button class="profile-messages-btn" onclick="window.location.href='messages.html'">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+            <span>Мессенджер</span>
+        </button>
     </div>
 
     <!-- Контент профиля -->
@@ -43,7 +44,7 @@
                 <input type="file" id="avatarInput" accept="image/*" style="display: none;">
             </div>
             <h2 class="profile-name" id="profileName">Загрузка...</h2>
-            <div class="profile-phone" id="profileEmail"></div>
+            <div class="profile-email" id="profileEmail"></div>
             
             <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать профиль</button>
         </div>
@@ -63,7 +64,7 @@
             </div>
         </div>
 
-        <!-- Информация (как в Telegram) -->
+        <!-- Информация (БЕЗ ТЕЛЕФОНА) -->
         <div class="profile-section">
             <div class="profile-section-title">Основная информация</div>
             <div class="profile-info-item">
@@ -74,13 +75,10 @@
                 <span class="info-label">Email</span>
                 <span class="info-value" id="displayEmail">...</span>
             </div>
-            <div class="profile-info-item">
-                <span class="info-label">Телефон</span>
-                <span class="info-value">не указан</span>
-            </div>
+            <!-- ТЕЛЕФОН УДАЛЁН -->
         </div>
 
-        <!-- Настройки (как в Telegram) -->
+        <!-- Настройки -->
         <div class="profile-section">
             <div class="profile-section-title">Настройки</div>
             <div class="settings-menu">
@@ -95,7 +93,7 @@
                         <div class="settings-description">Звук, вибрация, приоритет</div>
                     </div>
                     <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </div>
@@ -112,7 +110,7 @@
                         <div class="settings-description">Блокировки, кто видит</div>
                     </div>
                     <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </div>
@@ -129,7 +127,7 @@
                         <div class="settings-description">Тёмная тема, размер</div>
                     </div>
                     <div class="item-arrow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#c0c8cf">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
                         </svg>
                     </div>
