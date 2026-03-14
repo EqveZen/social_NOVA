@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOVA • Профиль</title>
-    <link rel="stylesheet" href="css/profile.css">
+    <link rel="stylesheet" href="css/profile-telegram.css">
 </head>
 <body class="profile-page">
     <!-- Верхняя панель -->
@@ -15,10 +15,11 @@
                     <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
                 </svg>
             </button>
+            <!-- НАЗВАНИЕ ПО СЕРЕДИНЕ -->
             <span class="profile-header-title">Профиль</span>
         </div>
         
-        <!-- КНОПКА В МЕССЕНДЖЕР -->
+        <!-- Кнопка в мессенджер -->
         <button class="profile-messages-btn" onclick="window.location.href='messages.html'">
             <svg viewBox="0 0 24 24">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z"/>
@@ -29,7 +30,7 @@
 
     <!-- Контент профиля -->
     <div class="profile-container">
-        <!-- Аватар и имя -->
+        <!-- Аватар и имя (БЕЗ ПОЧТЫ) -->
         <div class="profile-avatar-section">
             <div class="profile-avatar">
                 <div class="avatar-image" onclick="document.getElementById('avatarInput').click()">
@@ -44,12 +45,12 @@
                 <input type="file" id="avatarInput" accept="image/*" style="display: none;">
             </div>
             <h2 class="profile-name" id="profileName">Загрузка...</h2>
-            <div class="profile-email" id="profileEmail"></div>
+            <!-- ПОЧТА УДАЛЕНА -->
             
             <button class="profile-edit-btn" onclick="window.toggleEditForm()">Редактировать профиль</button>
         </div>
 
-        <!-- Форма редактирования -->
+        <!-- Форма редактирования (ДОБАВЛЕНО ПОЛЕ БИО) -->
         <div id="editForm" class="edit-form">
             <h3>Редактировать профиль</h3>
             <div class="edit-input-group">
@@ -58,24 +59,32 @@
             <div class="edit-input-group">
                 <input type="email" class="edit-input" id="editEmail" placeholder="Email">
             </div>
+            <!-- НОВОЕ ПОЛЕ ДЛЯ БИО -->
+            <div class="edit-input-group">
+                <textarea class="edit-input" id="editBio" placeholder="О себе" rows="3" style="resize: none;">🚀 Социальная сеть NOVA</textarea>
+            </div>
             <div class="edit-actions">
                 <button class="edit-save-btn" onclick="window.updateProfile()">Сохранить</button>
                 <button class="edit-cancel-btn" onclick="window.toggleEditForm()">Отмена</button>
             </div>
         </div>
 
-        <!-- Информация (БЕЗ ТЕЛЕФОНА) -->
+        <!-- Информация (С БИО) -->
         <div class="profile-section">
             <div class="profile-section-title">Основная информация</div>
             <div class="profile-info-item">
                 <span class="info-label">Имя</span>
                 <span class="info-value" id="displayName">...</span>
             </div>
+            <!-- НОВОЕ ПОЛЕ БИО -->
+            <div class="profile-info-item">
+                <span class="info-label">О себе</span>
+                <span class="info-value" id="displayBio">🚀 Социальная сеть NOVA</span>
+            </div>
             <div class="profile-info-item">
                 <span class="info-label">Email</span>
                 <span class="info-value" id="displayEmail">...</span>
             </div>
-            <!-- ТЕЛЕФОН УДАЛЁН -->
         </div>
 
         <!-- Настройки -->
