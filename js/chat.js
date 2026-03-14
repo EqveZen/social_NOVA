@@ -22,28 +22,32 @@ export async function initChat(chatId) {
     markMessagesAsRead()
 }
 
-// Загрузка информации о чате
+// Загрузка информации о чате (УПРОЩЁННЫЙ ВАРИАНТ)
 async function loadChatInfo() {
     try {
-        const { data: participants, error } = await supabase
+        // Сначала получаем user_id собеседника
+        const { data: participants, error: partError } = await supabase
             .from('chat_participants')
-            .select(`
-                user_id,
-                profiles:profiles!inner (
-                    username,
-                    email,
-                    avatar_url,
-                    bio
-                )
-            `)
+            .select('user_id')
             .eq('chat_id', currentChatId)
             .neq('user_id', currentUser.id)
         
-        if (error) throw error
+        if (partError) throw partError
         
         if (!participants || participants.length === 0) return
         
-        otherUser = participants[0].profiles
+        const otherUserId = participants[0].user_id
+        
+        // Потом получаем данные профиля
+        const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('username, email, avatar_url, bio')
+            .eq('id', otherUserId)
+            .single()
+        
+        if (profileError) throw profileError
+        
+        otherUser = profile
         
         document.getElementById('chatUserName').textContent = otherUser.username || 'Пользователь'
         document.getElementById('chatAvatar').textContent = 
