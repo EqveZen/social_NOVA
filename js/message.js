@@ -10,16 +10,12 @@ export async function initMessages() {
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     
-    if (!currentUser) {
-        console.log('❌ Пользователь не авторизован')
-        return
-    }
+    if (!currentUser) return
     
     await loadChats()
-    setupRealtime()
 }
 
-// Загрузка чатов
+// Загрузка чатов (УПРОЩЁННО)
 async function loadChats() {
     try {
         // Получаем все чаты пользователя
@@ -42,7 +38,7 @@ async function loadChats() {
             .from('chats')
             .select('*')
             .in('id', chatIds)
-            .order('last_message_time', { ascending: false })
+            .order('last_message_time', { ascending: false, nullsLast: true })
         
         if (chatsError) throw chatsError
         
@@ -64,20 +60,18 @@ async function loadChats() {
 // Загрузка деталей чата
 async function loadChatDetails(chat, container) {
     try {
-        // Получаем user_id собеседника
+        // Получаем собеседника
         const { data: participants, error: partError } = await supabase
             .from('chat_participants')
             .select('user_id')
             .eq('chat_id', chat.id)
-            .neq('user_id', currentUser.id)
         
         if (partError) throw partError
         
-        if (!participants || participants.length === 0) return
+        const otherUserId = participants.find(p => p.user_id !== currentUser.id)?.user_id
+        if (!otherUserId) return
         
-        const otherUserId = participants[0].user_id
-        
-        // Получаем данные профиля
+        // Получаем профиль
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, avatar_url')
@@ -89,7 +83,7 @@ async function loadChatDetails(chat, container) {
         // Получаем последнее сообщение
         const { data: messages, error: msgError } = await supabase
             .from('messages')
-            .select('*')
+            .select('content, created_at')
             .eq('chat_id', chat.id)
             .order('created_at', { ascending: false })
             .limit(1)
@@ -111,14 +105,8 @@ async function loadChatDetails(chat, container) {
         const chatElement = createChatElement(chat.id, profile, lastMessage, count || 0)
         container.appendChild(chatElement)
         
-        allChats.push({
-            element: chatElement,
-            name: (profile.username || '').toLowerCase(),
-            lastMessage: lastMessage?.content || ''
-        })
-        
     } catch (error) {
-        console.error('❌ Ошибка загрузки деталей чата:', error)
+        console.error('❌ Ошибка загрузки деталей:', error)
     }
 }
 
@@ -126,7 +114,6 @@ async function loadChatDetails(chat, container) {
 function createChatElement(chatId, user, lastMessage, unreadCount) {
     const div = document.createElement('div')
     div.className = 'chat-item'
-    div.setAttribute('data-chat-id', chatId)
     div.onclick = () => window.location.href = `chat.html?id=${chatId}`
     
     const time = lastMessage ? formatTime(lastMessage.created_at) : ''
@@ -162,17 +149,6 @@ function showEmptyChats() {
             <button class="start-chat-btn" onclick="window.location.href='search.html'">Найти собеседника</button>
         </div>
     `
-}
-
-// Realtime обновления
-function setupRealtime() {
-    supabase
-        .channel('messages-channel')
-        .on('postgres_changes', 
-            { event: 'INSERT', schema: 'public', table: 'messages' },
-            () => loadChats()
-        )
-        .subscribe()
 }
 
 // Форматирование времени
