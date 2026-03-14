@@ -1,0 +1,266 @@
+/* css/messages.css */
+.messages-page {
+    background: #fafafa;
+}
+
+/* Верхняя панель (такая же как в профиле) */
+.messages-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.messages-left svg {
+    cursor: pointer;
+}
+
+.messages-center .logo {
+    font-size: 24px;
+    font-weight: 900;
+    color: #EB670E;
+}
+
+.messages-right {
+    display: flex;
+    gap: 12px;
+}
+
+/* Контейнер чатов */
+.chats-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Поиск */
+.search-box {
+    padding: 12px 16px;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 16px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.search-input:focus {
+    outline: none;
+    background: #e8e8e8;
+}
+
+/* Список чатов */
+.chats-list {
+    background: white;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-item:hover {
+    background: #f8f8f8;
+}
+
+.chat-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2A3582, #EB670E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-name-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.chat-name {
+    font-weight: 600;
+    color: #262626;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+.chat-last-message {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.message-text {
+    color: #8e8e8e;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.unread-badge {
+    background: #EB670E;
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Пустой список */
+.empty-chats {
+    text-align: center;
+    padding: 60px 20px;
+    color: #8e8e8e;
+}
+
+.empty-chats h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #262626;
+}
+
+.start-chat-btn {
+    background: #EB670E;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+/* Модальное окно нового чата */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    color: #262626;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #8e8e8e;
+}
+
+.users-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.user-item:hover {
+    background: #f5f5f5;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #2A3582;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 12px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-info .name {
+    font-weight: 600;
+    color: #262626;
+}
+
+.user-info .email {
+    font-size: 12px;
+    color: #8e8e8e;
+}
+
+/* Адаптация */
+@media (max-width: 768px) {
+    .chats-container {
+        max-width: 100%;
+    }
+    
+    .chat-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+}
