@@ -126,7 +126,7 @@ export async function login(email, password) {
                 username: profile?.username || data.user.user_metadata?.username
             }))
             
-            window.location.href = 'feed.html'
+            window.location.href = './feed.html'
         }
 
     } catch (err) {
