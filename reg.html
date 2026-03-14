@@ -3,46 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA — Регистрация</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>NOVA • Регистрация</title>
     <link rel="stylesheet" href="css/auth.css">
 </head>
 <body class="auth-page">
-    <div class="reactions">
-        <div class="reaction heart"></div>
-        <div class="reaction star"></div>
-        <div class="reaction like"></div>
-        <div class="reaction heart"></div>
-        <div class="reaction star"></div>
-        <div class="reaction like"></div>
-    </div>
-
-    <body class="auth-page">
-    <div class="auth-card">
-        <div class="auth-logo">NOVA</div>
-        
-        <form id="registerForm">
-            <div class="input-group">
-                <input type="text" id="regUsername" required>
-                <label>Логин</label>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <h1>NOVA</h1>
+                <p>мессенджер</p>
             </div>
             
-            <div class="input-group">
-                <input type="email" id="regEmail" required>
-                <label>Почта</label>
-            </div>
-            
-            <div class="input-group">
-                <input type="password" id="regPassword" required minlength="6">
-                <label>Пароль</label>
-            </div>
-            
-            <button type="submit">Зарегистрироваться</button>
-            
-            <div class="signup">
-                Уже есть аккаунт? <a href="log.html">Войти!</a>
-            </div>
-        </form>
+            <form id="registerForm" class="auth-form">
+                <div class="auth-input-group">
+                    <input type="text" class="auth-input" id="regUsername" placeholder="Имя пользователя" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <input type="email" class="auth-input" id="regEmail" placeholder="Email" required>
+                </div>
+                
+                <div class="auth-input-group">
+                    <input type="password" class="auth-input" id="regPassword" placeholder="Пароль" required minlength="6">
+                </div>
+                
+                <!-- КНОПКА ПО ЦЕНТРУ -->
+                <button type="submit" class="auth-button">Зарегистрироваться</button>
+                
+                <div class="auth-links">
+                    <a href="log.html" class="auth-link">Уже есть аккаунт? Войти</a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script type="module">
