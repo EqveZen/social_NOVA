@@ -2,28 +2,28 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>NOVA • Чаты</title>
-    
     <link rel="stylesheet" href="css/messages.css">
 </head>
 <body class="messages-page">
     <!-- Верхняя панель -->
-    <div class="messages-top-bar">
+    <div class="messages-header">
         <div class="messages-left">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#EB670E">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
             </svg>
+            <span class="messages-title">Чаты</span>
         </div>
         
-        <div class="messages-center">
-            <span class="logo">NOVA</span>
-        </div>
-        
-        <!-- ИКОНКА ПРОФИЛЯ СПРАВА -->
         <div class="messages-right">
-            <button class="profile-icon-btn" onclick="window.location.href='profile.html'">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#EB670E">
+            <button class="header-btn" onclick="window.location.href='search.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+            </button>
+            <button class="header-btn" onclick="window.location.href='profile.html'">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
             </button>
@@ -32,19 +32,25 @@
 
     <!-- Поиск -->
     <div class="search-box">
-        <input type="text" class="search-input" placeholder="🔍 Поиск" id="searchInput">
+        <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по чатам" onkeyup="filterChats()">
     </div>
 
     <!-- Список чатов -->
     <div class="chats-container">
         <div class="chats-list" id="chatsList">
-            <!-- Чаты будут загружаться сюда -->
+            <div class="empty-chats">
+                <h3>У вас пока нет чатов</h3>
+                <p>Найдите людей и начните общение</p>
+                <button class="start-chat-btn" onclick="window.location.href='search.html'">Найти собеседника</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { checkAuth } from './js/auth.js'
-        import { initMessages } from './js/messages.js'
+        import { initMessages, filterChats } from './js/messages.js'
+        
+        window.filterChats = filterChats
         
         const user = await checkAuth()
         if (user) {
