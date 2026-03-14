@@ -19,26 +19,27 @@ export async function initChat(chatId) {
     await loadMessages()
     subscribeToMessages()
     setupMessageInput()
-    markMessagesAsRead()
 }
 
-// Загрузка информации о чате (УПРОЩЁННЫЙ ВАРИАНТ)
+// Загрузка информации о чате (САМЫЙ ПРОСТОЙ СПОСОБ)
 async function loadChatInfo() {
     try {
-        // Сначала получаем user_id собеседника
-        const { data: participants, error: partError } = await supabase
+        // Просто получаем всех участников чата
+        const { data: participants, error } = await supabase
             .from('chat_participants')
             .select('user_id')
             .eq('chat_id', currentChatId)
-            .neq('user_id', currentUser.id)
         
-        if (partError) throw partError
+        if (error) throw error
         
         if (!participants || participants.length === 0) return
         
-        const otherUserId = participants[0].user_id
+        // Находим собеседника
+        const otherUserId = participants.find(p => p.user_id !== currentUser.id)?.user_id
         
-        // Потом получаем данные профиля
+        if (!otherUserId) return
+        
+        // Получаем данные профиля
         const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('username, email, avatar_url, bio')
@@ -76,7 +77,7 @@ async function loadMessages() {
         
         let lastDate = null
         
-        messages.forEach(msg => {
+        for (const msg of messages) {
             const msgDate = new Date(msg.created_at).toDateString()
             
             if (msgDate !== lastDate) {
@@ -85,7 +86,7 @@ async function loadMessages() {
             }
             
             addMessageToContainer(msg, container)
-        })
+        }
         
         scrollToBottom()
         
@@ -147,10 +148,6 @@ function subscribeToMessages() {
                 const container = document.getElementById('messagesContainer')
                 addMessageToContainer(payload.new, container)
                 scrollToBottom()
-                
-                if (payload.new.user_id !== currentUser.id) {
-                    markMessageAsRead(payload.new.id)
-                }
             }
         )
         .subscribe()
@@ -186,8 +183,7 @@ export async function sendMessage() {
         .from('chats')
         .update({ 
             last_message: content,
-            last_message_time: new Date(),
-            last_message_user: currentUser.id
+            last_message_time: new Date().toISOString()
         })
         .eq('id', currentChatId)
 }
@@ -211,25 +207,15 @@ function setupMessageInput() {
     window.sendMessage = sendMessage
 }
 
-// Отметить как прочитанное
-async function markMessageAsRead(messageId) {
-    await supabase
-        .from('messages')
-        .update({ read: true })
-        .eq('id', messageId)
-}
-
-async function markMessagesAsRead() {
-    await supabase
-        .from('messages')
-        .update({ read: true })
-        .eq('chat_id', currentChatId)
-        .neq('user_id', currentUser.id)
-        .eq('read', false)
-}
-
 // Прокрутка вниз
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer')
     container.scrollTop = container.scrollHeight
+}
+
+// Очистка при выходе
+export function cleanup() {
+    if (messagesSubscription) {
+        messagesSubscription.unsubscribe()
+    }
 }
