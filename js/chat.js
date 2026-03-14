@@ -5,62 +5,44 @@ let currentUser = null
 let currentChatId = null
 let otherUser = null
 let messagesSubscription = null
-let typingTimeout = null
 
 export async function initChat(chatId) {
-    // Получаем текущего пользователя
     const { data: { user } } = await supabase.auth.getUser()
     currentUser = user
     currentChatId = chatId
     
     if (!currentUser || !currentChatId) return
     
-    // Загружаем информацию о чате
     await loadChatInfo()
-    
-    // Загружаем сообщения
     await loadMessages()
-    
-    // Подписываемся на новые сообщения
     subscribeToMessages()
-    
-    // Настраиваем ввод сообщения
     setupMessageInput()
-    
-    // Отмечаем сообщения как прочитанные
     markMessagesAsRead()
 }
 
 // Загрузка информации о чате
 async function loadChatInfo() {
-    // Получаем собеседника
-    const { data: participants, error } = await supabase
+    const { data: participants } = await supabase
         .from('chat_participants')
         .select(`
             user_id,
             profiles:user_id (
                 username,
                 email,
-                avatar_url
+                avatar_url,
+                bio
             )
         `)
         .eq('chat_id', currentChatId)
         .neq('user_id', currentUser.id)
     
-    if (error || !participants || participants.length === 0) {
-        console.error('Ошибка загрузки участников:', error)
-        return
-    }
+    if (!participants || participants.length === 0) return
     
     otherUser = participants[0].profiles
     
-    // Обновляем UI
     document.getElementById('chatUserName').textContent = otherUser.username || 'Пользователь'
     document.getElementById('chatAvatar').textContent = 
         otherUser.username ? otherUser.username[0].toUpperCase() : '?'
-    
-    // Проверяем онлайн статус (будет позже)
-    checkUserOnline()
 }
 
 // Загрузка сообщений
@@ -82,63 +64,60 @@ async function loadMessages() {
     let lastDate = null
     
     messages.forEach(msg => {
-        const messageDate = new Date(msg.created_at).toDateString()
+        const msgDate = new Date(msg.created_at).toDateString()
         
-        // Добавляем разделитель даты
-        if (messageDate !== lastDate) {
+        if (msgDate !== lastDate) {
             addDateDivider(container, msg.created_at)
-            lastDate = messageDate
+            lastDate = msgDate
         }
         
-        // Добавляем сообщение
         addMessageToContainer(msg, container)
     })
     
-    // Прокручиваем вниз
     scrollToBottom()
 }
 
-// Добавление сообщения в контейнер
+// Добавление сообщения
 function addMessageToContainer(message, container) {
-    const template = document.getElementById('messageTemplate')
-    const clone = template.content.cloneNode(true)
+    const div = document.createElement('div')
+    div.className = `message-wrapper ${message.user_id === currentUser.id ? 'own' : ''}`
     
-    const wrapper = clone.querySelector('.message-wrapper')
-    const text = clone.querySelector('.message-text')
-    const timeText = clone.querySelector('.time-text')
-    const statusSpan = clone.querySelector('.message-status')
+    const time = new Date(message.created_at).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    })
     
-    // Определяем, своё сообщение или нет
-    if (message.user_id === currentUser.id) {
-        wrapper.classList.add('own')
-    }
+    div.innerHTML = `
+        <div class="message-bubble">
+            <div class="message-text">${message.content}</div>
+            <div class="message-time">
+                ${time}
+                ${message.user_id === currentUser.id ? (message.read ? ' ✓✓' : ' ✓') : ''}
+            </div>
+        </div>
+    `
     
-    text.textContent = message.content
-    timeText.textContent = formatTime(message.created_at)
-    
-    // Статус сообщения (прочитано/доставлено)
-    if (message.user_id === currentUser.id) {
-        statusSpan.textContent = message.read ? '✓✓' : '✓'
-    }
-    
-    container.appendChild(clone)
+    container.appendChild(div)
 }
 
-// Добавление разделителя даты
+// Разделитель даты
 function addDateDivider(container, date) {
-    const divider = document.createElement('div')
-    divider.className = 'date-divider'
+    const div = document.createElement('div')
+    div.className = 'date-divider'
     
-    const dateText = formatDate(date)
-    divider.innerHTML = `<span>${dateText}</span>`
+    const dateText = new Date(date).toLocaleDateString([], { 
+        day: 'numeric', 
+        month: 'long' 
+    })
     
-    container.appendChild(divider)
+    div.innerHTML = `<span>${dateText}</span>`
+    container.appendChild(div)
 }
 
 // Подписка на новые сообщения
 function subscribeToMessages() {
     messagesSubscription = supabase
-        .channel(`chat:${currentChatId}`)
+        .channel(`chat-${currentChatId}`)
         .on('postgres_changes', 
             { 
                 event: 'INSERT', 
@@ -147,12 +126,10 @@ function subscribeToMessages() {
                 filter: `chat_id=eq.${currentChatId}`
             }, 
             payload => {
-                // Новое сообщение
                 const container = document.getElementById('messagesContainer')
                 addMessageToContainer(payload.new, container)
                 scrollToBottom()
                 
-                // Если сообщение не наше, отмечаем как прочитанное
                 if (payload.new.user_id !== currentUser.id) {
                     markMessageAsRead(payload.new.id)
                 }
@@ -168,11 +145,9 @@ export async function sendMessage() {
     
     if (!content) return
     
-    // Очищаем инпут
     input.value = ''
     document.getElementById('sendBtn').disabled = true
     
-    // Отправляем сообщение
     const { error } = await supabase
         .from('messages')
         .insert({
@@ -187,26 +162,24 @@ export async function sendMessage() {
         alert('Не удалось отправить сообщение')
     }
     
-    // Обновляем last_message в чате
+    // Обновляем последнее сообщение в чате
     await supabase
         .from('chats')
         .update({ 
             last_message: content,
-            last_message_time: new Date()
+            last_message_time: new Date(),
+            last_message_user: currentUser.id
         })
         .eq('id', currentChatId)
 }
 
-// Настройка ввода сообщения
+// Настройка ввода
 function setupMessageInput() {
     const input = document.getElementById('messageInput')
     const sendBtn = document.getElementById('sendBtn')
     
     input.addEventListener('input', () => {
         sendBtn.disabled = !input.value.trim()
-        
-        // Показываем индикатор печатания (будет позже)
-        showTypingIndicator()
     })
     
     input.addEventListener('keypress', (e) => {
@@ -215,22 +188,11 @@ function setupMessageInput() {
             sendMessage()
         }
     })
+    
+    window.sendMessage = sendMessage
 }
 
-// Показать индикатор печатания
-function showTypingIndicator() {
-    // Очищаем предыдущий таймаут
-    if (typingTimeout) clearTimeout(typingTimeout)
-    
-    // Показываем индикатор (будет позже с realtime)
-    
-    // Скрываем через 2 секунды
-    typingTimeout = setTimeout(() => {
-        // Скрываем индикатор
-    }, 2000)
-}
-
-// Отметить сообщение как прочитанное
+// Отметить как прочитанное
 async function markMessageAsRead(messageId) {
     await supabase
         .from('messages')
@@ -238,7 +200,6 @@ async function markMessageAsRead(messageId) {
         .eq('id', messageId)
 }
 
-// Отметить все сообщения как прочитанные
 async function markMessagesAsRead() {
     await supabase
         .from('messages')
@@ -248,54 +209,8 @@ async function markMessagesAsRead() {
         .eq('read', false)
 }
 
-// Проверка онлайн статуса (будет позже)
-function checkUserOnline() {
-    document.getElementById('chatUserStatus').textContent = 'был(а) недавно'
-}
-
-// Опции чата
-export function showChatOptions() {
-    // Меню с опциями (очистить чат, пожаловаться и т.д.)
-    console.log('Опции чата')
-}
-
-// Прикрепление файла
-export function attachFile() {
-    // Загрузка фото/файлов (будет позже)
-    alert('Загрузка файлов будет позже')
-}
-
 // Прокрутка вниз
 function scrollToBottom() {
     const container = document.getElementById('messagesContainer')
     container.scrollTop = container.scrollHeight
-}
-
-// Форматирование времени
-function formatTime(timestamp) {
-    const date = new Date(timestamp)
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-}
-
-// Форматирование даты
-function formatDate(timestamp) {
-    const date = new Date(timestamp)
-    const today = new Date()
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-    
-    if (date.toDateString() === today.toDateString()) {
-        return 'Сегодня'
-    } else if (date.toDateString() === yesterday.toDateString()) {
-        return 'Вчера'
-    } else {
-        return date.toLocaleDateString([], { day: 'numeric', month: 'long' })
-    }
-}
-
-// Очистка при выходе
-export function cleanup() {
-    if (messagesSubscription) {
-        messagesSubscription.unsubscribe()
-    }
 }
