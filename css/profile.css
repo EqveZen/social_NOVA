@@ -1,0 +1,184 @@
+/* css/profile.css */
+
+/* Стили для профиля */
+.profile-container {
+    width: 600px;
+    max-width: 90%;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 20px;
+}
+
+/* Аватар */
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2A3582, #EB670E);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar:hover::after {
+    content: '📷';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#avatarInput {
+    display: none;
+}
+
+/* Информация профиля */
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2A3582;
+}
+
+.profile-email {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+/* Статистика */
+.profile-stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #EB670E;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Форма редактирования */
+.edit-form {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    display: none;
+}
+
+.edit-form.show {
+    display: block;
+}
+
+.edit-form h3 {
+    margin-bottom: 20px;
+    color: #2A3582;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.save-btn {
+    background: #28a745 !important;
+}
+
+.cancel-btn {
+    background: #dc3545 !important;
+}
+
+.edit-toggle {
+    background: #2A3582;
+    margin-top: 10px;
+}
+
+/* Навигация */
+.nav-menu {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.nav-btn {
+    flex: 1;
+    padding: 10px;
+    background: #f0f0f0;
+    color: #333;
+}
+
+.nav-btn.active {
+    background: #EB670E;
+    color: white;
+}
+
+/* Посты пользователя */
+#userPosts {
+    margin-top: 30px;
+}
+
+#userPosts h3 {
+    color: #2A3582;
+    margin: 20px 0;
+}
+
+#postsList {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* Шапка */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logout-btn {
+    width: auto !important;
+    padding: 8px 20px !important;
+    background: #dc3545 !important;
+}
