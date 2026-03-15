@@ -15,6 +15,8 @@ export async function initSearch() {
         return
     }
     
+    console.log('✅ Текущий пользователь:', currentUser.id)
+    
     const searchInput = document.getElementById('searchInput')
     if (searchInput) {
         searchInput.addEventListener('input', handleSearch)
@@ -22,24 +24,31 @@ export async function initSearch() {
     }
     
     // Загружаем всех пользователей при открытии
-    loadAllUsers()
+    await loadAllUsers()
 }
 
 // Загрузка всех пользователей
 async function loadAllUsers() {
     try {
+        console.log('📦 Загрузка пользователей...')
+        
         const { data: users, error } = await supabase
             .from('profiles')
             .select('id, username, email, avatar_url')
             .neq('id', currentUser.id)
             .limit(50)
         
-        if (error) throw error
+        if (error) {
+            console.error('❌ Ошибка загрузки:', error)
+            throw error
+        }
         
+        console.log('✅ Найдено пользователей:', users?.length || 0)
         displayResults(users || [])
         
     } catch (error) {
-        console.error('Ошибка загрузки пользователей:', error)
+        console.error('❌ Ошибка загрузки пользователей:', error)
+        showError('Не удалось загрузить пользователей')
     }
 }
 
@@ -58,6 +67,8 @@ async function handleSearch() {
 
 async function performSearch(query) {
     try {
+        console.log('🔍 Поиск:', query)
+        
         const { data: users, error } = await supabase
             .from('profiles')
             .select('id, username, email, avatar_url')
@@ -67,10 +78,11 @@ async function performSearch(query) {
         
         if (error) throw error
         
+        console.log('✅ Найдено:', users?.length)
         displayResults(users || [])
         
     } catch (error) {
-        console.error('Ошибка поиска:', error)
+        console.error('❌ Ошибка поиска:', error)
     }
 }
 
@@ -110,25 +122,46 @@ function createUserElement(user) {
     return div
 }
 
+function showError(message) {
+    const container = document.getElementById('searchResults')
+    if (container) {
+        container.innerHTML = `<div class="no-results" style="color: #ff6b6b;">❌ ${message}</div>`
+    }
+}
+
 window.startChat = async function(userId) {
     try {
         console.log('🚀 Создание чата с:', userId)
+        console.log('👤 Текущий пользователь:', currentUser.id)
         
-        // Проверяем существующий чат
-        const { data: existingChat, error: checkError } = await supchema
+        if (!currentUser) {
+            alert('Ошибка: пользователь не авторизован')
+            return
+        }
+        
+        // Проверяем существующий чат через RPC
+        const { data: chatId, error } = await supabase
             .rpc('get_or_create_chat', {
                 user1_id: currentUser.id,
                 user2_id: userId
             })
         
-        if (checkError) throw checkError
+        if (error) {
+            console.error('❌ Ошибка RPC:', error)
+            throw error
+        }
         
-        if (existingChat) {
-            window.location.href = `/nova-social/chat.html?id=${existingChat}`
+        console.log('✅ Чат создан/найден, ID:', chatId)
+        
+        if (chatId) {
+            // Успешно - переходим в чат
+            window.location.href = `/nova-social/chat.html?id=${chatId}`
+        } else {
+            throw new Error('Не удалось создать чат')
         }
         
     } catch (error) {
-        console.error('Ошибка создания чата:', error)
-        alert('Не удалось создать чат')
+        console.error('❌ Ошибка создания чата:', error)
+        alert('Не удалось создать чат. Пожалуйста, попробуйте ещё раз.')
     }
 }
