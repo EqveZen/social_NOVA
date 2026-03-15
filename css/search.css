@@ -1,4 +1,10 @@
 /* css/search.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .search-page {
     background: linear-gradient(135deg, #2A3582 0%, #1a1f4d 100%);
     min-height: 100vh;
@@ -30,6 +36,7 @@
     justify-content: center;
     cursor: pointer;
     color: #EB670E;
+    flex-shrink: 0;
 }
 
 .search-back-btn:hover {
@@ -45,17 +52,23 @@
     font-size: 16px;
     color: white;
     outline: none;
+    -webkit-appearance: none;
 }
 
 .search-header input:focus {
     border-color: #EB670E;
+    background: rgba(255, 255, 255, 0.15);
 }
 
-/* Результаты поиска */
+.search-header input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Результаты */
 .search-results {
     max-width: 600px;
     margin: 0 auto;
-    padding: 20px 16px;
+    padding: 16px;
 }
 
 .user-item {
@@ -87,10 +100,12 @@
     font-size: 20px;
     font-weight: bold;
     margin-right: 15px;
+    flex-shrink: 0;
 }
 
 .user-info {
     flex: 1;
+    min-width: 0;
 }
 
 .user-name {
@@ -98,30 +113,66 @@
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-email {
     color: rgba(255, 255, 255, 0.5);
     font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .start-chat-btn {
     background: #EB670E;
     border: none;
     color: white;
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 20px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .start-chat-btn:hover {
     background: #d55a0c;
 }
 
-.no-results {
+.start-chat-btn:active {
+    transform: scale(0.95);
+}
+
+.no-results, .loading {
     text-align: center;
     padding: 40px 20px;
     color: rgba(255, 255, 255, 0.5);
+    font-size: 16px;
+}
+
+/* Адаптация для телефонов */
+@media (max-width: 480px) {
+    .search-header {
+        padding: 8px 12px;
+    }
+    
+    .search-header input {
+        padding: 10px 14px;
+        font-size: 15px;
+    }
+    
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .start-chat-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
 }
